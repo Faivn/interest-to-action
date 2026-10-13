@@ -27,8 +27,8 @@
   border-radius: var(--radius-md);
   background: var(--sunken);
   color: var(--ink);
-  font-size: 1.0625rem;
-  line-height: 1.4118;
+  font-size: var(--text-body);
+  line-height: var(--text-body-lh);
   box-shadow: inset 0 0 0 1px transparent;
   transition: box-shadow var(--dur-fast) var(--ease-standard);
   appearance: none;
@@ -54,6 +54,37 @@ textarea.field__control {
   outline: 2px solid var(--ember);
   outline-offset: 2px;
   box-shadow: inset 0 0 0 1px var(--line-strong);
+}
+
+/* A field with content inside its box: the box carries the fill, ring and error border. */
+.field__box {
+  border-radius: var(--radius-md);
+  background: var(--sunken);
+  transition: box-shadow var(--dur-fast) var(--ease-standard);
+}
+
+.field__box .field__control {
+  background: transparent;
+  box-shadow: none;
+  outline: none;
+}
+
+.field__box:hover {
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+}
+
+.field__box:focus-within {
+  outline: 2px solid var(--ember);
+  outline-offset: 2px;
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+}
+
+.field--error .field__box {
+  box-shadow: inset 0 0 0 1.5px var(--rose);
+}
+
+.field__inside {
+  padding: 0 var(--space-3) var(--space-3);
 }
 
 .field--error .field__control {

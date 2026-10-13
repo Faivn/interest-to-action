@@ -1,7 +1,7 @@
 .segmented {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(var(--segments), 1fr);
+  grid-template-columns: repeat(var(--segments), minmax(0, 1fr));
   padding: 4px;
   border-radius: var(--radius-full);
   background: var(--sunken);
@@ -33,8 +33,10 @@
   border-radius: var(--radius-full);
   background: transparent;
   color: var(--ink-2);
-  font-size: 0.9375rem;
-  font-weight: 600;
+  min-width: 0;
+  font-size: var(--text-label);
+  font-weight: var(--weight-semibold);
+  white-space: nowrap;
   transition: color var(--dur-fast) var(--ease-standard);
   -webkit-tap-highlight-color: transparent;
 }
@@ -49,14 +51,31 @@
   border-radius: var(--radius-full);
   background: var(--paper);
   color: var(--ink-2);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  line-height: 1.4;
+  font-size: var(--text-caption);
+  font-weight: var(--weight-semibold);
+  line-height: var(--text-caption-lh);
 }
 
 .segmented__option[aria-checked='true'] .segmented__count {
   background: var(--ember-tint);
   color: var(--ember-text);
+}
+
+.segmented__option svg {
+  flex-shrink: 0;
+}
+
+/* Three or more options: tighter type so labels stay on one line at phone width. */
+.segmented--compact .segmented__option {
+  gap: 6px;
+  padding: 0 var(--space-1);
+  font-size: var(--text-caption);
+}
+
+@media (max-width: 359px) {
+  .segmented--compact .segmented__option svg {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

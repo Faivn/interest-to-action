@@ -1,0 +1,18 @@
+.provenance {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: var(--radius-xs);
+  white-space: nowrap;
+}
+
+.provenance--suggested {
+  background: var(--lilac-tint);
+  color: var(--lilac-text);
+}
+
+.provenance--edited {
+  background: var(--sunken);
+  color: var(--ink-2);
+}

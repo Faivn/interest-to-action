@@ -58,7 +58,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             onFocus={() => setPaused(true)}
             onBlur={() => setPaused(false)}
           >
-            {toast.tone === 'success' && <Check className="toast__icon" aria-hidden="true" size={20} strokeWidth={2.5} />}
+            {toast.tone === 'success' && <Check className="toast__icon" aria-hidden="true" size={20} />}
             {toast.tone === 'error' && <TriangleAlert className="toast__icon" aria-hidden="true" size={20} />}
             <span className="toast__message">{toast.message}</span>
             {toast.actionLabel && toast.onAction && (

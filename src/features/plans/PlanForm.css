@@ -1,0 +1,21 @@
+.plan-form {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.plan-form__quick {
+  margin-top: calc(var(--space-6) * -1 + var(--space-3));
+}
+
+.plan-form__preview {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--line);
+}
+
+.plan-form__preview-label {
+  color: var(--ink-2);
+}

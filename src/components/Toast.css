@@ -3,7 +3,7 @@
   z-index: var(--z-toast);
   left: 0;
   right: 0;
-  bottom: calc(var(--bottom-bar-height) + var(--space-2));
+  bottom: calc(var(--bottom-bar-height) + var(--space-4)); /* 16 above the action bar (DESIGN.md §8.11) */
   display: flex;
   justify-content: center;
   padding: 0 var(--gutter);
@@ -41,8 +41,8 @@
 .toast__message {
   flex: 1;
   padding: var(--space-1) 0;
-  font-size: 1rem;
-  line-height: 1.375;
+  font-size: var(--text-callout);
+  line-height: var(--text-callout-lh);
 }
 
 .toast__action {
@@ -53,13 +53,18 @@
   border-radius: var(--radius-sm);
   background: transparent;
   color: var(--toast-action);
-  font-size: 0.9375rem;
-  font-weight: 700;
+  font-size: var(--text-label);
+  font-weight: var(--weight-semibold);
 }
 
 .toast__action:hover {
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+
+/* Screens without a pinned bottom action bar: sit near the bottom edge instead. */
+body:not(:has(.screen__actions, .plans-screen__add)) .toast-region {
+  bottom: calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
 }
 
 @media (min-width: 600px) {

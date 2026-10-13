@@ -35,8 +35,11 @@
   --toast-success: #7ad19c;
   --toast-error: #f59aab;
 
-  /* gradients */
-  --gradient-daybreak: linear-gradient(135deg, #d9d0f7 0%, #ffd3b5 55%, #f6a26b 100%);
+  /* gradients (DESIGN.md §4) — the daybreak stops are the same in light and dark */
+  --daybreak-1: #d9d0f7;
+  --daybreak-2: #ffd3b5;
+  --daybreak-3: #f6a26b;
+  --gradient-daybreak: linear-gradient(135deg, var(--daybreak-1) 0%, var(--daybreak-2) 55%, var(--daybreak-3) 100%);
   --gradient-daybreak-wash: radial-gradient(
     120% 60% at 50% 0%,
     rgba(217, 208, 247, 0.55) 0%,
@@ -44,9 +47,31 @@
     rgba(250, 246, 239, 0) 75%
   );
 
-  /* type */
+  /* type (DESIGN.md §5) — sizes in rem so they follow the user's text size */
   --font-display: 'Fraunces Variable', ui-serif, 'New York', Georgia, serif;
   --font-ui: 'Instrument Sans Variable', -apple-system, 'SF Pro Text', system-ui, sans-serif;
+  --text-display: 2.125rem; /* 34 / 40 */
+  --text-display-lh: 2.5rem;
+  --text-title-1: 1.75rem; /* 28 / 34 */
+  --text-title-1-lh: 2.125rem;
+  --text-title-2: 1.375rem; /* 22 / 28 */
+  --text-title-2-lh: 1.75rem;
+  --text-plan-action: 1.25rem; /* 20 / 26 */
+  --text-plan-action-lh: 1.625rem;
+  --text-body: 1.0625rem; /* 17 / 24 */
+  --text-body-lh: 1.5rem;
+  --text-callout: 1rem; /* 16 / 22 */
+  --text-callout-lh: 1.375rem;
+  --text-label: 0.9375rem; /* 15 / 20 */
+  --text-label-lh: 1.25rem;
+  --text-overline: 0.75rem; /* 12 / 16 */
+  --text-overline-lh: 1rem;
+  --text-caption: 0.8125rem; /* 13 / 18 */
+  --text-caption-lh: 1.125rem;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --icon-stroke: 1.75px;
 
   /* space (4pt base) */
   --space-1: 4px;
@@ -88,6 +113,9 @@
   --z-toast: 30;
 
   /* sizing */
+  --top-bar-height: 44px;
+  --list-pane-width: 380px;
+  --detail-pane-max: 720px;
   --bottom-bar-height: calc(56px + var(--space-4) * 2 + env(safe-area-inset-bottom, 0px));
 }
 
@@ -139,6 +167,8 @@
 @media (max-width: 374px) {
   :root {
     --gutter: var(--space-4);
+    --text-display: 1.875rem; /* 30 / 36 */
+    --text-display-lh: 2.25rem;
   }
 }
 

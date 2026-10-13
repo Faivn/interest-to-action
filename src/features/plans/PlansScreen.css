@@ -1,4 +1,4 @@
-.tasks-screen {
+.plans-screen {
   display: grid;
   gap: var(--space-5);
   width: 100%;
@@ -8,19 +8,19 @@
     calc(var(--bottom-bar-height) + var(--space-16));
 }
 
-.tasks-screen__header {
+.plans-screen__header {
   display: grid;
   gap: var(--space-2);
   margin-bottom: var(--space-1);
 }
 
-.tasks-screen__summary {
+.plans-screen__summary {
   color: var(--ink-2);
   margin-top: var(--space-1);
 }
 
 /* Phone: primary action pinned to the bottom, within thumb reach (DESIGN.md §6.2). */
-.tasks-screen__add {
+.plans-screen__add {
   position: fixed;
   z-index: var(--z-bar);
   left: 0;
@@ -30,34 +30,58 @@
   background: linear-gradient(to top, var(--paper) 70%, transparent);
 }
 
-.tasks-screen__add > .btn {
+.plans-screen__add > .btn {
   display: flex;
   max-width: var(--content-max);
   margin: 0 auto;
   box-shadow: var(--elev-1);
 }
 
-.tasks-screen__panel {
+.plans-screen__panel {
   min-height: 240px;
 }
 
 /* Medium and up: the action moves inline beside the title. */
 @media (min-width: 600px) {
-  .tasks-screen {
+  .plans-screen {
     padding-top: var(--space-16);
     padding-bottom: var(--space-16);
   }
-  .tasks-screen__header {
+  .plans-screen__header {
     grid-template-columns: 1fr auto;
     align-items: end;
   }
-  .tasks-screen__add {
+  .plans-screen__add {
     position: static;
     padding: 0;
     background: none;
   }
-  .tasks-screen__add > .btn {
+  .plans-screen__add > .btn {
     width: auto;
     box-shadow: none;
   }
+}
+
+.plans-screen__title:focus {
+  outline: none;
+}
+
+/* Empty: no pinned bar, so the page needs no room for it. */
+.plans-screen:not(:has(.plans-screen__add)) {
+  padding-bottom: var(--space-16);
+}
+
+/* List pane in the expanded split view: header stacks, no fixed bar. */
+.plans-screen--pane {
+  max-width: none;
+  padding: var(--space-12) 0 var(--space-16);
+}
+
+.plans-screen--pane .plans-screen__header {
+  grid-template-columns: 1fr;
+  align-items: start;
+}
+
+.plans-screen--pane .plans-screen__add > .btn {
+  width: 100%;
 }

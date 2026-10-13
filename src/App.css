@@ -1,0 +1,34 @@
+/* Expanded My Plans: list 380 wide, detail fills the rest up to 720 (DESIGN.md §12). */
+.plans-split {
+  display: grid;
+  grid-template-columns: var(--list-pane-width) minmax(0, var(--detail-pane-max));
+  justify-content: center;
+  align-items: start;
+  gap: var(--space-8);
+  width: 100%;
+  padding: 0 var(--gutter);
+}
+
+.plans-split__list {
+  min-width: 0;
+}
+
+.plans-split__detail {
+  position: sticky;
+  top: 0;
+  min-width: 0;
+}
+
+.plans-split__placeholder {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-12);
+  padding: var(--space-10);
+  border: 1.5px dashed var(--line-strong);
+  border-radius: var(--radius-lg);
+  color: var(--ink-2);
+}
+
+.plans-split__placeholder .t-title-2 {
+  color: var(--ink);
+}

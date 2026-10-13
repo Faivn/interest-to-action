@@ -1,0 +1,25 @@
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: var(--radius-full);
+  font-weight: var(--weight-semibold);
+  white-space: nowrap;
+}
+
+.status-badge--not-started {
+  background: var(--sunken);
+  color: var(--ink-2);
+}
+
+.status-badge--in-progress {
+  background: var(--ember-tint);
+  color: var(--ember-text);
+}
+
+.status-badge--completed {
+  background: var(--fern-tint);
+  color: var(--fern);
+}

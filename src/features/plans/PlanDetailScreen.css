@@ -1,0 +1,75 @@
+.plan-detail__header {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.plan-detail__label {
+  color: var(--ink-2);
+}
+
+.plan-detail__interest {
+  color: var(--ink);
+  font-size: var(--text-plan-action);
+  line-height: var(--text-plan-action-lh);
+}
+
+.plan-detail__plan {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--line);
+}
+
+.plan-detail__plan-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.plan-detail__why {
+  color: var(--ink-2);
+}
+
+.plan-detail__section {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.plan-detail__context {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.plan-detail__context div {
+  display: grid;
+  gap: 2px;
+}
+
+.plan-detail__context dt {
+  color: var(--ink-3);
+}
+
+.plan-detail__context dd {
+  margin: 0;
+  color: var(--ink);
+}
+
+.plan-detail__menu {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: stretch;
+}
+
+.plan-detail__dates {
+  color: var(--ink-3);
+}
+
+/* Inside the wide-screen split view the detail pane needs no frame or push animation. */
+.screen--embedded {
+  min-height: 0;
+}

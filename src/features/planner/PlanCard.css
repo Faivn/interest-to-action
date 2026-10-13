@@ -1,0 +1,203 @@
+.plan-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--line);
+  overflow: hidden;
+  transition:
+    opacity var(--dur-base) var(--ease-standard),
+    transform var(--dur-base) var(--ease-standard),
+    box-shadow var(--dur-fast) var(--ease-standard);
+  animation: plan-card-in var(--dur-base) var(--ease-enter) both;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+
+.plan-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: var(--gradient-daybreak);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-base) var(--ease-standard);
+}
+
+.plan-card:not(.plan-card--skeleton):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 1px var(--line), var(--elev-1);
+}
+
+.plan-card--chosen {
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 1px var(--line), var(--elev-1);
+}
+
+.plan-card--chosen::before {
+  transform: scaleX(1);
+}
+
+.plan-card--muted {
+  opacity: 0.4;
+}
+
+/* Regenerating: cards stay in place at 50% while a shimmer sweeps across (DESIGN.md §8.6). */
+.suggestions--regenerating .plan-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 30%, color-mix(in srgb, var(--surface) 70%, transparent) 50%, transparent 70%);
+  background-size: 200% 100%;
+  animation: plan-card-sweep 1.4s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes plan-card-sweep {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -50% 0;
+  }
+}
+
+.plan-card__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  margin: calc(var(--space-3) * -1) calc(var(--space-3) * -1) 0 0;
+}
+
+/* "WHEN … ✦ Suggested" — the tag sits at the right, beside the dismiss control (DESIGN.md §8.6). */
+.plan-card__head .provenance {
+  margin-left: auto;
+}
+
+.plan-card__when-label {
+  color: var(--ember-text);
+}
+
+
+
+.plan-card__trigger {
+  color: var(--ink);
+}
+
+/* The bridge: trigger leads to action (DESIGN.md §1) */
+.plan-card__bridge {
+  width: 0;
+  height: 16px;
+  margin: var(--space-2) 0 var(--space-2) 6px;
+  border-left: 2px dotted var(--ember);
+}
+
+.plan-card__ill-label {
+  color: var(--ink-2);
+}
+
+.plan-card__action {
+  margin-top: 2px;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.plan-card__duration {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 5px;
+  margin-top: var(--space-4);
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  background: var(--ember-tint);
+  color: var(--ember-text);
+  font-weight: var(--weight-semibold);
+}
+
+.plan-card__why {
+  margin-top: var(--space-3);
+  color: var(--ink-2);
+}
+
+.plan-card__why summary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 44px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: var(--weight-semibold);
+}
+
+.plan-card__why summary::-webkit-details-marker {
+  display: none;
+}
+
+.plan-card__why summary svg {
+  transition: transform var(--dur-fast) var(--ease-standard);
+}
+
+.plan-card__why[open] summary svg {
+  transform: rotate(180deg);
+}
+
+.plan-card__why > p {
+  padding-bottom: var(--space-1);
+}
+
+.plan-card__actions {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line);
+}
+
+.plan-card__actions .btn--primary {
+  flex: 1;
+  min-height: 48px;
+}
+
+.plan-card__actions .btn--secondary {
+  min-width: 96px;
+}
+
+@media (max-width: 374px) {
+  .plan-card__actions {
+    flex-direction: column;
+  }
+}
+
+@keyframes plan-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plan-card {
+    animation-name: plan-card-fade;
+    animation-delay: 0ms;
+  }
+  @keyframes plan-card-fade {
+    from {
+      opacity: 0;
+    }
+  }
+  .plan-card--chosen,
+  .plan-card:not(.plan-card--skeleton):hover {
+    transform: none;
+  }
+  .suggestions--regenerating .plan-card::after {
+    animation: none;
+    display: none;
+  }
+  .plan-card::before {
+    transition: none;
+  }
+}

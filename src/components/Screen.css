@@ -1,0 +1,190 @@
+.screen {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100dvh;
+  /* The step push starts 24px off to the side; never let it widen the page on phones. */
+  overflow-x: clip;
+}
+
+.screen__frame {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+  isolation: isolate;
+}
+
+/* Daybreak glow: AI moments only (DESIGN.md §1, §4). */
+.screen--wash .screen__frame::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 auto;
+  height: min(60vh, 520px);
+  background: var(--gradient-daybreak-wash);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .screen--wash .screen__frame::before {
+    display: none;
+  }
+}
+
+.screen__top-bar {
+  position: sticky;
+  z-index: var(--z-bar);
+  top: 0;
+  padding: env(safe-area-inset-top, 0px) var(--space-2) 0;
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+/* Let the Daybreak wash show through the bar at the top of AI screens. */
+.screen--wash .screen__top-bar {
+  background: color-mix(in srgb, var(--paper) 55%, transparent);
+}
+
+.top-bar {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  max-width: calc(var(--content-max) + var(--space-8));
+  min-height: var(--top-bar-height);
+  margin: 0 auto;
+}
+
+.top-bar__center {
+  display: flex;
+  justify-content: center;
+}
+
+.top-bar__trailing {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.screen__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  flex: 1;
+  width: 100%;
+  max-width: calc(var(--content-max) + var(--gutter) * 2);
+  margin: 0 auto;
+  padding: var(--space-4) var(--gutter) var(--space-10);
+  animation: screen-push var(--dur-slow) var(--ease-standard) both;
+}
+
+/* Step to step: a 24px horizontal push plus fade; the action bar stays put (DESIGN.md §11.2). */
+@keyframes screen-push {
+  from {
+    opacity: 0;
+    transform: translateX(var(--push-from, 24px));
+  }
+}
+
+.flow[data-direction='back'] {
+  --push-from: -24px;
+}
+
+.screen__body h1:focus {
+  outline: none;
+}
+
+.screen--with-actions .screen__body {
+  padding-bottom: calc(var(--bottom-bar-height) + var(--space-6));
+}
+
+/* Phone: actions pinned within thumb reach (DESIGN.md §6.2). */
+.screen__actions {
+  position: fixed;
+  z-index: var(--z-bar);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4) var(--gutter) calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(to top, var(--paper) 75%, transparent);
+}
+
+.screen__actions > * {
+  width: 100%;
+  max-width: var(--content-max);
+  margin: 0 auto;
+}
+
+/* Medium: actions inline at the end of content, secondary on the left. */
+@media (min-width: 600px) {
+  .screen__body {
+    padding-top: var(--space-8);
+  }
+  .screen--with-actions .screen__body {
+    padding-bottom: var(--space-6);
+  }
+  .screen__actions {
+    position: static;
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+    align-items: center;
+    gap: var(--space-3);
+    width: 100%;
+    max-width: calc(var(--content-max) + var(--gutter) * 2);
+    margin: 0 auto;
+    padding: 0 var(--gutter) var(--space-16);
+    background: none;
+  }
+  .screen__actions > * {
+    width: auto;
+    margin: 0;
+  }
+}
+
+/* Expanded: the flow sits in a 560 surface panel on a paper page, so it never stretches. */
+@media (min-width: 1024px) {
+  .screen {
+    padding: var(--space-12) var(--gutter) var(--space-16);
+  }
+  .screen__frame {
+    flex: 0 0 auto;
+    max-width: calc(var(--content-max) + var(--space-10) * 2);
+    margin: 0 auto;
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    box-shadow: 0 0 0 1px var(--line);
+    overflow: clip;
+  }
+  .screen__top-bar {
+    position: static;
+    padding: var(--space-3) var(--space-4) 0;
+    background: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .screen__body {
+    padding: var(--space-6) var(--space-10) var(--space-8);
+  }
+  .screen--with-actions .screen__body {
+    padding-bottom: var(--space-6);
+  }
+  .screen__actions {
+    padding: 0 var(--space-10) var(--space-10);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .screen__body {
+    animation-name: screen-fade;
+  }
+  @keyframes screen-fade {
+    from {
+      opacity: 0;
+    }
+  }
+}

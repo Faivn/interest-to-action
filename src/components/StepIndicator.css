@@ -1,0 +1,20 @@
+.steps {
+  display: flex;
+  gap: 4px;
+}
+
+.steps__segment {
+  width: 24px;
+  height: 4px;
+  border-radius: var(--radius-full);
+  background: var(--line-strong);
+  opacity: 0.45;
+  transition:
+    background-color var(--dur-base) var(--ease-standard),
+    opacity var(--dur-base) var(--ease-standard);
+}
+
+.steps__segment--done {
+  background: var(--ember);
+  opacity: 1;
+}

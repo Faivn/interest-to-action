@@ -1,0 +1,10 @@
+.plan-sentence {
+  color: var(--ink);
+  font-weight: var(--weight-regular);
+  overflow-wrap: anywhere;
+}
+
+.plan-sentence strong {
+  color: var(--ember-text);
+  font-weight: var(--weight-medium); /* 500 vs 400 connecting words (DESIGN.md §8.8) */
+}

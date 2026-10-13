@@ -1,23 +1,23 @@
 import { useLayoutEffect, useRef } from 'react';
-import { TaskItem } from './TaskItem';
-import type { Task } from './types';
-import './TaskList.css';
+import { PlanRow } from './PlanRow';
+import type { SavedPlan } from './types';
+import './PlanList.css';
 
-interface TaskListProps {
-  tasks: Task[];
+interface PlanListProps {
+  plans: SavedPlan[];
   label: string;
-  onToggle: (task: Task) => void;
-  onEdit: (task: Task) => void;
-  onDelete: (task: Task) => void;
+  onToggleComplete: (plan: SavedPlan) => void;
+  onOpen: (plan: SavedPlan) => void;
+  selectedId?: string | null;
   /** Called when the list loses its last item while focus was inside it. */
   onFocusLost?: () => void;
 }
 
-export function TaskList({ tasks, label, onToggle, onEdit, onDelete, onFocusLost }: TaskListProps) {
+export function PlanList({ plans, label, onToggleComplete, onOpen, selectedId = null, onFocusLost }: PlanListProps) {
   const listRef = useRef<HTMLUListElement>(null);
   const lastFocusedIndex = useRef<number | null>(null);
 
-  // When a focused row leaves (completed or deleted), keep keyboard users in place
+  // When a focused row leaves (e.g. moved to Completed), keep keyboard users in place
   // by moving focus to the row that took its position.
   useLayoutEffect(() => {
     const list = listRef.current;
@@ -28,15 +28,15 @@ export function TaskList({ tasks, label, onToggle, onEdit, onDelete, onFocusLost
     lastFocusedIndex.current = null;
     const rows = list?.querySelectorAll<HTMLLIElement>(':scope > li') ?? [];
     const row = rows[Math.min(index, rows.length - 1)];
-    const target = row?.querySelector<HTMLElement>('.task__check');
+    const target = row?.querySelector<HTMLElement>('.plan-row__check');
     if (target) target.focus();
     else onFocusLost?.();
-  }, [tasks, onFocusLost]);
+  }, [plans, onFocusLost]);
 
   return (
     <ul
       ref={listRef}
-      className="task-list"
+      className="plan-list"
       aria-label={label}
       onFocus={(event) => {
         const row = (event.target as HTMLElement).closest('li');
@@ -49,14 +49,14 @@ export function TaskList({ tasks, label, onToggle, onEdit, onDelete, onFocusLost
         if (next && !listRef.current?.contains(next)) lastFocusedIndex.current = null;
       }}
     >
-      {tasks.map((task, index) => (
-        <TaskItem
-          key={task.id}
-          task={task}
+      {plans.map((plan, index) => (
+        <PlanRow
+          key={plan.id}
+          plan={plan}
           index={index}
-          onToggle={onToggle}
-          onEdit={onEdit}
-          onDelete={onDelete}
+          selected={plan.id === selectedId}
+          onToggleComplete={onToggleComplete}
+          onOpen={onOpen}
         />
       ))}
     </ul>

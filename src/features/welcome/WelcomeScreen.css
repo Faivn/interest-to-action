@@ -1,0 +1,35 @@
+/* Faint dot texture, Welcome only (DESIGN.md §4) */
+.welcome::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 auto;
+  height: 70vh;
+  background-image: radial-gradient(var(--ink) 1px, transparent 1px); /* 4% dot grid, 12px pitch */
+  background-size: 12px 12px;
+  opacity: 0.04;
+  mask-image: linear-gradient(to bottom, #000 30%, transparent);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .welcome::after,
+  .welcome::before {
+    display: none;
+  }
+}
+
+.welcome__content {
+  display: grid;
+  gap: var(--space-4);
+  padding-top: var(--space-16);
+}
+
+.welcome__spark {
+  margin-bottom: var(--space-4);
+}
+
+.welcome__lede {
+  max-width: 34ch;
+  color: var(--ink-2);
+}

@@ -23,8 +23,11 @@ export function Button({
   disabled,
   type = 'button',
   ref,
+  onClick,
   ...rest
 }: ButtonProps) {
+  // Disabled buttons stay focusable (aria-disabled) so a reason nearby can still be discovered (DESIGN.md §8.1).
+  const inactive = disabled || loading;
   const classes = ['btn', `btn--${variant}`, fullWidth && 'btn--full', loading && 'btn--loading', className]
     .filter(Boolean)
     .join(' ');
@@ -33,8 +36,15 @@ export function Button({
       ref={ref}
       type={type}
       className={classes}
-      disabled={disabled}
+      aria-disabled={inactive || undefined}
       aria-busy={loading || undefined}
+      onClick={(event) => {
+        if (inactive) {
+          event.preventDefault();
+          return;
+        }
+        onClick?.(event);
+      }}
       {...rest}
     >
       <span className="btn__content">

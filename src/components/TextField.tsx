@@ -1,9 +1,18 @@
-import { useId, useLayoutEffect, useRef, type ChangeEvent, type Ref } from 'react';
+import { useId, useLayoutEffect, useRef, type ChangeEvent, type ReactNode, type Ref } from 'react';
 import { TriangleAlert } from 'lucide-react';
 import './TextField.css';
 
 interface TextFieldProps {
   label: string;
+  /** Override the label style, e.g. a serif question as the field's visible label. */
+  labelClassName?: string;
+  /** Rendered at the end of the label row, e.g. a provenance tag. Replaces "Optional". */
+  accessory?: ReactNode;
+  /**
+   * Rendered inside the field box, below the text (e.g. suggestion chips). Pass `null` to keep the
+   * box (and the textarea element) stable while the content is hidden.
+   */
+  inside?: ReactNode;
   value: string;
   onChange: (value: string) => void;
   /** Shows "Optional" beside the label so optionality is visible without asterisks. */
@@ -25,6 +34,9 @@ const MAX_AUTO_HEIGHT = 240;
 
 export function TextField({
   label,
+  labelClassName = 't-label',
+  accessory,
+  inside,
   value,
   onChange,
   optional = false,
@@ -75,12 +87,17 @@ export function TextField({
   return (
     <div className={['field', error && 'field--error'].filter(Boolean).join(' ')}>
       <div className="field__label-row">
-        <label htmlFor={id} className="field__label t-label">
+        <label htmlFor={id} className={`field__label ${labelClassName}`}>
           {label}
         </label>
-        {optional && <span className="field__optional t-caption">Optional</span>}
+        {accessory ?? (optional && <span className="field__optional t-caption">Optional</span>)}
       </div>
-      {multiline ? (
+      {inside !== undefined ? (
+        <div className="field__box">
+          <textarea {...shared} ref={setRefs} rows={1} style={{ minHeight }} />
+          {inside && <div className="field__inside">{inside}</div>}
+        </div>
+      ) : multiline ? (
         <textarea {...shared} ref={setRefs} rows={1} style={{ minHeight }} />
       ) : (
         <input {...shared} ref={setRefs} type="text" autoComplete="off" />

@@ -13,10 +13,12 @@ interface ChipGroupProps<T> {
   value: T;
   onChange: (value: T) => void;
   optional?: boolean;
+  /** Keep the label for assistive tech only, when a visible label sits elsewhere. */
+  hideLabel?: boolean;
 }
 
 /** Single-select wrapping chips with radio semantics and roving focus (DESIGN.md §8.3). */
-export function ChipGroup<T>({ label, options, value, onChange, optional = false }: ChipGroupProps<T>) {
+export function ChipGroup<T>({ label, options, value, onChange, optional = false, hideLabel = false }: ChipGroupProps<T>) {
   const labelId = useId();
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
   const selectedIndex = Math.max(
@@ -43,7 +45,7 @@ export function ChipGroup<T>({ label, options, value, onChange, optional = false
 
   return (
     <div className="chip-group">
-      <div className="field__label-row">
+      <div className={hideLabel ? 'visually-hidden' : 'field__label-row'}>
         <span id={labelId} className="t-label chip-group__label">
           {label}
         </span>
@@ -66,7 +68,7 @@ export function ChipGroup<T>({ label, options, value, onChange, optional = false
               onClick={() => onChange(option.value)}
               onKeyDown={(e) => move(e, index)}
             >
-              {selected && <Check aria-hidden="true" size={16} strokeWidth={2.5} />}
+              {selected && <Check aria-hidden="true" size={16} />}
               {option.label}
             </button>
           );

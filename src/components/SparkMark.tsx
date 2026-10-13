@@ -20,9 +20,10 @@ export function SparkMark({ size = 24, className }: SparkMarkProps) {
     >
       <defs>
         <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#B9A7F0" />
-          <stop offset="0.55" stopColor="#FFB98A" />
-          <stop offset="1" stopColor="#E2622B" />
+          {/* gradient/daybreak: lilac → peach → ember (DESIGN.md §4) */}
+          <stop offset="0" style={{ stopColor: 'var(--daybreak-1)' }} />
+          <stop offset="0.55" style={{ stopColor: 'var(--daybreak-2)' }} />
+          <stop offset="1" style={{ stopColor: 'var(--daybreak-3)' }} />
         </linearGradient>
       </defs>
       <path

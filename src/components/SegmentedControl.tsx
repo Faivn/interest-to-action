@@ -1,4 +1,4 @@
-import { useRef, type CSSProperties, type KeyboardEvent } from 'react';
+import { useRef, type CSSProperties, type KeyboardEvent, type ReactNode } from 'react';
 import './SegmentedControl.css';
 
 export interface Segment<T extends string> {
@@ -6,6 +6,8 @@ export interface Segment<T extends string> {
   label: string;
   /** Optional count shown after the label, e.g. "Active 3". */
   count?: number;
+  /** Optional decorative icon before the label. */
+  icon?: ReactNode;
 }
 
 interface SegmentedControlProps<T extends string> {
@@ -44,7 +46,7 @@ export function SegmentedControl<T extends string>({
     <div
       role="radiogroup"
       aria-label={label}
-      className="segmented"
+      className={`segmented${segments.length > 2 ? ' segmented--compact' : ''}`}
       style={{ '--segments': segments.length, '--active': activeIndex } as CSSProperties}
     >
       <span className="segmented__thumb" aria-hidden="true" />
@@ -63,6 +65,7 @@ export function SegmentedControl<T extends string>({
           onClick={() => onChange(segment.value)}
           onKeyDown={(e) => onKeyDown(e, index)}
         >
+          {segment.icon}
           {segment.label}
           {segment.count !== undefined && <span className="segmented__count">{segment.count}</span>}
         </button>

@@ -1,6 +1,6 @@
-.task {
+.plan-row {
   display: grid;
-  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  grid-template-columns: 44px minmax(0, 1fr);
   align-items: center;
   gap: var(--space-1);
   min-height: 72px;
@@ -12,16 +12,22 @@
     box-shadow var(--dur-fast) var(--ease-standard),
     opacity var(--dur-base) var(--ease-standard),
     transform var(--dur-base) var(--ease-standard);
-  animation: task-in var(--dur-base) var(--ease-enter) both;
+  animation: plan-row-in var(--dur-base) var(--ease-enter) both;
   animation-delay: calc(var(--i, 0) * 60ms);
 }
 
-.task:hover {
+.plan-row:hover {
   box-shadow: 0 0 0 1px var(--line), var(--elev-1);
 }
 
+/* The plan open beside the list: ember selection ring (DESIGN.md §3.2 accent/graphic). */
+.plan-row--selected,
+.plan-row--selected:hover {
+  box-shadow: 0 0 0 1.5px var(--ember);
+}
+
 /* ---------- complete toggle ---------- */
-.task__check {
+.plan-row__check {
   position: relative;
   display: grid;
   place-items: center;
@@ -34,13 +40,13 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.task__check svg {
+.plan-row__check svg {
   width: 28px;
   height: 28px;
   overflow: visible;
 }
 
-.task__check-ring {
+.plan-row__check-ring {
   fill: transparent;
   stroke: var(--line-strong);
   stroke-width: 1.5;
@@ -49,11 +55,11 @@
     stroke var(--dur-fast) var(--ease-standard);
 }
 
-.task__check:hover .task__check-ring {
+.plan-row__check:hover .plan-row__check-ring {
   stroke: var(--ember);
 }
 
-.task__check-mark {
+.plan-row__check-mark {
   fill: none;
   stroke: var(--surface);
   stroke-width: 2.5;
@@ -66,30 +72,30 @@
 
 /* Hover preview: a faint check suggests what tapping will do. */
 @media (hover: hover) {
-  .task:not(.task--done) .task__check:hover .task__check-mark {
+  .plan-row:not(.plan-row--done) .plan-row__check:hover .plan-row__check-mark {
     stroke: var(--ember);
     stroke-dashoffset: 0;
     opacity: 0.45;
   }
 }
 
-.task--done .task__check-ring {
+.plan-row--done .plan-row__check-ring {
   fill: var(--fern);
   stroke: var(--fern);
 }
 
-.task--done .task__check-mark {
+.plan-row--done .plan-row__check-mark {
   stroke-dashoffset: 0;
 }
 
 /* ✦ sparkle burst on completion (DESIGN.md §10.5) */
-.task__burst {
+.plan-row__burst {
   position: absolute;
   inset: 0;
   pointer-events: none;
 }
 
-.task__burst span {
+.plan-row__burst span {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -101,15 +107,15 @@
   opacity: 0;
 }
 
-.task__burst span:nth-child(even) {
+.plan-row__burst span:nth-child(even) {
   background: var(--lilac-text);
 }
 
-.task--completing .task__burst span {
-  animation: task-burst var(--dur-gentle) var(--ease-enter) forwards;
+.plan-row--completing .plan-row__burst span {
+  animation: plan-row-burst var(--dur-gentle) var(--ease-enter) forwards;
 }
 
-@keyframes task-burst {
+@keyframes plan-row-burst {
   0% {
     opacity: 1;
     transform: rotate(calc(var(--n) * 60deg)) translateY(-10px) scale(1);
@@ -121,68 +127,68 @@
 }
 
 /* ---------- content ---------- */
-.task__main {
+.plan-row__main {
   display: grid;
-  gap: 2px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-2);
   min-height: 56px;
-  padding: var(--space-2) var(--space-2);
+  padding: var(--space-3) var(--space-2) var(--space-3) var(--space-2);
   border: 0;
   border-radius: var(--radius-md);
   background: transparent;
+  color: inherit;
   text-align: left;
-  align-content: center;
   -webkit-tap-highlight-color: transparent;
 }
 
-.task__title {
+.plan-row__text {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.plan-row__interest {
+  color: var(--ink-2);
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.plan-row__sentence {
   color: var(--ink);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
   overflow-wrap: anywhere;
 }
 
-.task__meta {
+.plan-row__meta {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-1) var(--space-2);
+  margin-top: 2px;
   color: var(--ink-3);
 }
 
-.task__when {
-  color: var(--ember-text);
+.plan-row__chevron {
+  color: var(--ink-3);
+  transition: transform var(--dur-fast) var(--ease-standard);
 }
 
-.task__duration {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 1px 8px;
-  border-radius: var(--radius-full);
-  background: var(--ember-tint);
-  color: var(--ember-text);
+.plan-row:hover .plan-row__chevron {
+  transform: translateX(2px);
 }
 
-.task--done .task__meta {
-  color: var(--fern);
-}
-
-.task--completing .task__title {
+.plan-row--completing .plan-row__sentence {
   opacity: 0.6;
   transition: opacity var(--dur-base) var(--ease-standard);
 }
 
-/* ---------- delete ---------- */
-@media (hover: hover) {
-  .task__delete {
-    opacity: 0;
-    transition: opacity var(--dur-fast) var(--ease-standard);
-  }
-  .task:hover .task__delete,
-  .task:focus-within .task__delete {
-    opacity: 1;
-  }
-}
-
-@keyframes task-in {
+@keyframes plan-row-in {
   from {
     opacity: 0;
     transform: translateY(12px);
@@ -190,19 +196,19 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .task {
-    animation-name: task-fade;
+  .plan-row {
+    animation-name: plan-row-fade;
     animation-delay: 0ms;
   }
-  @keyframes task-fade {
+  @keyframes plan-row-fade {
     from {
       opacity: 0;
     }
   }
-  .task__check-mark {
+  .plan-row__check-mark {
     transition: none;
   }
-  .task--completing .task__burst span {
+  .plan-row--completing .plan-row__burst span {
     animation: none;
   }
 }
