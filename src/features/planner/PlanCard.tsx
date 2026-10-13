@@ -1,10 +1,14 @@
 import { useEffect, useId, useRef, useState, type CSSProperties } from 'react';
-import { Check, ChevronDown, Clock, Pencil, X } from 'lucide-react';
+import { AnimatePresence, LayoutGroup, m } from 'motion/react';
+import { ChevronDown, Clock, Pencil, X } from 'lucide-react';
+import { AutoHeight } from '../../components/AutoHeight';
+import { Collapsible } from '../../components/Collapsible';
+import { StatefulButton } from '../../components/StatefulButton';
 import { Button } from '../../components/Button';
 import { IconButton } from '../../components/IconButton';
 import { ProvenanceTag } from '../../components/ProvenanceTag';
 import { StreamingText, streamDuration } from '../../components/StreamingText';
-import { prefersReducedMotion } from '../../lib/motion';
+import { prefersReducedMotion, SPRING_LAYOUT } from '../../lib/motion';
 import { formatMinutes } from '../plans/types';
 import type { PlanSuggestion } from './types';
 import './PlanCard.css';
@@ -55,8 +59,10 @@ export function PlanRecommendationCard({
   promote = null,
 }: PlanRecommendationCardProps) {
   const drawerId = useId();
+  const alternativesRef = useRef<HTMLButtonElement>(null);
   const [selectedId, setSelectedId] = useState<string | null>(suggestions[0]?.id ?? null);
   const [open, setOpen] = useState(false);
+  const [highlighted, setHighlighted] = useState<string | null>(null);
 
   // New ideas (or a dismissed recommendation) fall back to the first remaining plan.
   const active = suggestions.find((s) => s.id === selectedId) ?? suggestions[0];
@@ -107,15 +113,28 @@ export function PlanRecommendationCard({
         </span>
       </div>
 
-      <PlanBody key={active.id} suggestion={active} seen={seen.current} labelId={`${drawerId}-action`} />
+      {/* The card morphs its height as plans change; the outgoing plan blurs away. */}
+      <AutoHeight>
+        <AnimatePresence mode="wait" initial={false}>
+          <m.div
+            key={active.id}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, transition: { duration: 0.18 } }}
+            exit={{ opacity: 0, filter: 'blur(4px)', transition: { duration: 0.12 } }}
+          >
+            <PlanBody suggestion={active} seen={seen.current} labelId={`${drawerId}-action`} />
+          </m.div>
+        </AnimatePresence>
+      </AutoHeight>
 
-      {/* Alternatives drawer — a distinctly new section of the card. */}
+      {/* Alternatives drawer — a distinctly new section of the card (beUI Collapsible). */}
       {others.length > 0 && (
-        <div className={`plan-card__drawer${open ? ' plan-card__drawer--open' : ''}`}>
-          <div className="plan-card__drawer-clip" id={drawerId} inert={!open}>
-            <div className="plan-card__drawer-body">
-              <p className="t-caption plan-card__drawer-title">Other options</p>
-              <ul className="plan-card__options">
+        <Collapsible id={drawerId} open={open} triggerRef={alternativesRef}>
+          <div className="plan-card__drawer-body">
+            <p className="t-caption plan-card__drawer-title">Other options</p>
+            {/* A soft highlight glides between options on hover and focus (beUI Shared Layout Background). */}
+            <LayoutGroup id={drawerId}>
+              <ul className="plan-card__options" onMouseLeave={() => setHighlighted(null)}>
                 {others.map((option) => (
                   <li key={option.id}>
                     <button
@@ -123,17 +142,28 @@ export function PlanRecommendationCard({
                       className="plan-card__option"
                       disabled={locked}
                       onClick={() => setSelectedId(option.id)}
+                      onMouseEnter={() => setHighlighted(option.id)}
+                      onFocus={() => setHighlighted(option.id)}
+                      onBlur={() => setHighlighted(null)}
                       aria-label={`Show this plan instead: when ${option.trigger}, I'll ${option.action} for ${option.durationMinutes} minutes`}
                     >
+                      {highlighted === option.id && !locked && (
+                        <m.span
+                          layoutId="option-highlight"
+                          className="plan-card__option-highlight"
+                          transition={SPRING_LAYOUT}
+                          aria-hidden="true"
+                        />
+                      )}
                       <span className="plan-card__option-text">{shortLabel(option)}</span>
                       <span className="plan-card__option-meta t-caption">{formatMinutes(option.durationMinutes)}</span>
                     </button>
                   </li>
                 ))}
               </ul>
-            </div>
+            </LayoutGroup>
           </div>
-        </div>
+        </Collapsible>
       )}
 
       <div className="plan-card__footer">
@@ -143,6 +173,7 @@ export function PlanRecommendationCard({
         <span className="plan-card__footer-actions">
           {others.length > 0 && (
             <Button
+              ref={alternativesRef}
               variant="secondary"
               className="plan-card__alternatives"
               aria-expanded={open}
@@ -154,17 +185,15 @@ export function PlanRecommendationCard({
               Alternatives
             </Button>
           )}
-          <Button
-            variant={saved ? 'success' : 'primary'}
+          <StatefulButton
             className="plan-card__save"
-            loading={savingId === active.id}
-            onClick={() => !locked && onSave(active)}
-            disabled={locked && !saved}
-            aria-label={saved ? 'Plan saved' : `Save this plan: ${active.action}`}
-            icon={saved ? <Check /> : undefined}
+            state={saved ? 'success' : savingId === active.id ? 'loading' : 'idle'}
+            disabled={locked}
+            onClick={() => onSave(active)}
+            aria-label={`Save this plan: ${active.action}`}
           >
-            {saved ? 'Saved' : 'Save this plan'}
-          </Button>
+            Save this plan
+          </StatefulButton>
         </span>
       </div>
     </article>

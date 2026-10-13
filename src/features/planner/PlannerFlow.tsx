@@ -241,6 +241,7 @@ export function PlannerFlow({ planner, navigate }: PlannerFlowProps) {
         return (
           <SuggestionsStep
             interest={state.interest}
+            context={state.context}
             suggestions={state.suggestions}
             request={state.request}
             source={planner.source}

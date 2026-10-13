@@ -1,4 +1,6 @@
-import { useEffect, useId, useRef, type ReactNode, type RefObject } from 'react';
+import { useEffect, useId, useRef, useState, type PointerEvent, type ReactNode, type RefObject } from 'react';
+import { m, useDragControls, type PanInfo } from 'motion/react';
+import { prefersReducedMotion } from '../lib/motion';
 import { X } from 'lucide-react';
 import { IconButton } from './IconButton';
 import './Sheet.css';
@@ -24,6 +26,20 @@ export function Sheet({ open, onClose, title, description, children, footer, ini
   const titleId = useId();
   const descriptionId = useId();
   const returnFocus = useRef<Element | null>(null);
+
+  // Phones: drag the sheet down by its grabber or header to dismiss (beUI Bottom Sheet, DESIGN.md §8.14).
+  const dragControls = useDragControls();
+  const [canDrag, setCanDrag] = useState(false);
+  useEffect(() => {
+    if (open) setCanDrag(window.matchMedia?.('(max-width: 599px)').matches && !prefersReducedMotion());
+  }, [open]);
+  const startDrag = (event: PointerEvent) => {
+    if (!canDrag || (event.target as HTMLElement).closest('button, a, input, textarea')) return;
+    dragControls.start(event);
+  };
+  const onDragEnd = (_: unknown, info: PanInfo) => {
+    if (info.offset.y > 120 || info.velocity.y > 500) onClose();
+  };
 
   useEffect(() => {
     const dialog = ref.current;
@@ -56,9 +72,18 @@ export function Sheet({ open, onClose, title, description, children, footer, ini
       }}
     >
       {open && (
-        <div className="sheet__panel">
-          <div className="sheet__grabber" aria-hidden="true" />
-          <header className="sheet__header">
+        <m.div
+          className="sheet__panel"
+          drag={canDrag ? 'y' : false}
+          dragControls={dragControls}
+          dragListener={false}
+          dragConstraints={{ top: 0, bottom: 0 }}
+          dragElastic={{ top: 0, bottom: 0.9 }}
+          dragSnapToOrigin
+          onDragEnd={onDragEnd}
+        >
+          <div className="sheet__grabber" aria-hidden="true" onPointerDown={startDrag} />
+          <header className="sheet__header" onPointerDown={startDrag}>
             <div>
               <h2 id={titleId} className="t-title-2">
                 {title}
@@ -73,7 +98,7 @@ export function Sheet({ open, onClose, title, description, children, footer, ini
           </header>
           <div className="sheet__body">{children}</div>
           {footer && <footer className="sheet__footer">{footer}</footer>}
-        </div>
+        </m.div>
       )}
     </dialog>
   );

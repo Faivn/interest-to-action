@@ -1,4 +1,5 @@
-import { useId, useLayoutEffect, useRef, type ChangeEvent, type ReactNode, type Ref } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, type ChangeEvent, type ReactNode, type Ref } from 'react';
+import { m, useAnimationControls } from 'motion/react';
 import { TriangleAlert } from 'lucide-react';
 import './TextField.css';
 
@@ -56,6 +57,12 @@ export function TextField({
   const errorId = `${id}-error`;
   const areaRef = useRef<HTMLTextAreaElement | null>(null);
 
+  // A short shake when a validation message appears (beUI Input). Removed under reduced motion by MotionConfig.
+  const shake = useAnimationControls();
+  useEffect(() => {
+    if (error) void shake.start({ x: [0, -6, 6, -4, 4, 0], transition: { duration: 0.36 } });
+  }, [error, shake]);
+
   useLayoutEffect(() => {
     const el = areaRef.current;
     if (!multiline || !el) return;
@@ -92,16 +99,18 @@ export function TextField({
         </label>
         {accessory ?? (optional && <span className="field__optional t-caption">Optional</span>)}
       </div>
-      {inside !== undefined ? (
-        <div className="field__box">
+      <m.div animate={shake}>
+        {inside !== undefined ? (
+          <div className="field__box">
+            <textarea {...shared} ref={setRefs} rows={1} style={{ minHeight }} />
+            {inside && <div className="field__inside">{inside}</div>}
+          </div>
+        ) : multiline ? (
           <textarea {...shared} ref={setRefs} rows={1} style={{ minHeight }} />
-          {inside && <div className="field__inside">{inside}</div>}
-        </div>
-      ) : multiline ? (
-        <textarea {...shared} ref={setRefs} rows={1} style={{ minHeight }} />
-      ) : (
-        <input {...shared} ref={setRefs} type="text" autoComplete="off" />
-      )}
+        ) : (
+          <input {...shared} ref={setRefs} type="text" autoComplete="off" />
+        )}
+      </m.div>
       {helper && !error && (
         <p id={helperId} className="field__helper t-caption">
           {helper}

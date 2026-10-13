@@ -1,4 +1,7 @@
-import { useRef, type CSSProperties, type KeyboardEvent, type ReactNode } from 'react';
+import { useId, useRef, type CSSProperties, type KeyboardEvent, type ReactNode } from 'react';
+import { LayoutGroup, m } from 'motion/react';
+import { SPRING_LAYOUT } from '../lib/motion';
+import { RollingNumber } from './RollingNumber';
 import './SegmentedControl.css';
 
 export interface Segment<T extends string> {
@@ -27,6 +30,7 @@ export function SegmentedControl<T extends string>({
   onChange,
   controls,
 }: SegmentedControlProps<T>) {
+  const groupId = useId();
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
   const activeIndex = Math.max(
     0,
@@ -47,29 +51,36 @@ export function SegmentedControl<T extends string>({
       role="radiogroup"
       aria-label={label}
       className={`segmented${segments.length > 2 ? ' segmented--compact' : ''}`}
-      style={{ '--segments': segments.length, '--active': activeIndex } as CSSProperties}
+      style={{ '--segments': segments.length } as CSSProperties}
     >
-      <span className="segmented__thumb" aria-hidden="true" />
-      {segments.map((segment, index) => (
-        <button
-          key={segment.value}
-          ref={(el) => {
-            refs.current[index] = el;
-          }}
-          type="button"
-          role="radio"
-          aria-checked={index === activeIndex}
-          aria-controls={controls}
-          tabIndex={index === activeIndex ? 0 : -1}
-          className="segmented__option"
-          onClick={() => onChange(segment.value)}
-          onKeyDown={(e) => onKeyDown(e, index)}
-        >
-          {segment.icon}
-          {segment.label}
-          {segment.count !== undefined && <span className="segmented__count">{segment.count}</span>}
-        </button>
-      ))}
+      <LayoutGroup id={groupId}>
+        {segments.map((segment, index) => (
+          <button
+            key={segment.value}
+            ref={(el) => {
+              refs.current[index] = el;
+            }}
+            type="button"
+            role="radio"
+            aria-checked={index === activeIndex}
+            aria-controls={controls}
+            tabIndex={index === activeIndex ? 0 : -1}
+            className="segmented__option"
+            onClick={() => onChange(segment.value)}
+            onKeyDown={(e) => onKeyDown(e, index)}
+          >
+            {/* The thumb glides to the active segment (beUI Tabs, segment variant). */}
+            {index === activeIndex && (
+              <m.span layoutId="segment-thumb" className="segmented__thumb" transition={SPRING_LAYOUT} aria-hidden="true" />
+            )}
+            {segment.icon}
+            {segment.label}
+            {segment.count !== undefined && <span className="segmented__count">
+              <RollingNumber value={segment.count} />
+            </span>}
+          </button>
+        ))}
+      </LayoutGroup>
     </div>
   );
 }

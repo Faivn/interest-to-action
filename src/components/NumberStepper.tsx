@@ -1,5 +1,7 @@
 import { useEffect, useId, useState, type ReactNode } from 'react';
+import { m } from 'motion/react';
 import { Minus, Plus, TriangleAlert } from 'lucide-react';
+import { SPRING_SWAP } from '../lib/motion';
 import './NumberStepper.css';
 
 interface NumberStepperProps {
@@ -20,6 +22,8 @@ export function NumberStepper({ label, value, onChange, unit, min = 1, max = 999
   const errorId = `${id}-error`;
   const unitId = `${id}-unit`;
   const [text, setText] = useState(Number.isFinite(value) ? String(value) : '');
+  // Each − / + press re-enters the value from the direction of change.
+  const [roll, setRoll] = useState<{ key: number; direction: 1 | -1 } | null>(null);
 
   // Follow external changes (the − / + buttons) without overwriting what the user is typing.
   useEffect(() => {
@@ -32,6 +36,7 @@ export function NumberStepper({ label, value, onChange, unit, min = 1, max = 999
     // Snap to the step grid: 12 → 15 (+) or 10 (−).
     const next = direction === 1 ? Math.floor(base / step) * step + step : Math.ceil(base / step) * step - step;
     set(next);
+    setRoll((r) => ({ key: (r?.key ?? 0) + 1, direction }));
   };
 
   return (
@@ -53,7 +58,11 @@ export function NumberStepper({ label, value, onChange, unit, min = 1, max = 999
           <Minus aria-hidden="true" size={20} />
         </button>
         <div className="stepper__input-wrap">
-          <input
+          <m.input
+            key={roll?.key ?? 0}
+            initial={roll ? { y: roll.direction * 10, opacity: 0, filter: 'blur(3px)' } : false}
+            animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
+            transition={SPRING_SWAP}
             id={id}
             className="field__control stepper__input"
             inputMode="numeric"

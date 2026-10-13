@@ -11,18 +11,15 @@
 .segmented__thumb {
   position: absolute;
   z-index: -1;
-  top: 4px;
-  bottom: 4px;
-  left: 4px;
-  width: calc((100% - 8px) / var(--segments));
+  inset: 0;
   border-radius: var(--radius-full);
   background: var(--surface);
   box-shadow: var(--elev-1), 0 0 0 1px var(--line);
-  transform: translateX(calc(100% * var(--active)));
-  transition: transform var(--dur-base) var(--ease-standard);
 }
 
 .segmented__option {
+  position: relative;
+  isolation: isolate;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -78,8 +75,3 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .segmented__thumb {
-    transition: none;
-  }
-}

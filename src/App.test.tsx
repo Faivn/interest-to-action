@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { App } from './App';
 import { createMockPlanner, type MockPlannerOptions } from './features/planner/mockPlanner';
@@ -67,15 +67,16 @@ describe('Interest to Action journey', () => {
     // Promote an alternative to the recommendation.
     const firstAction = within(card).getByRole('heading').textContent!;
     await user.click(options[0]);
+    // The outgoing plan blurs away before the promoted one appears.
+    await waitFor(() => expect(within(card).getByRole('heading').textContent).not.toBe(firstAction));
     const promoted = within(card).getByRole('heading').textContent!;
-    expect(promoted).not.toBe(firstAction);
     expect(within(card).getByText('Plan 2 of 3')).toBeInTheDocument();
 
     // Dismiss the recommendation, then undo: it comes back as the recommendation.
     await user.click(within(card).getByRole('button', { name: /Dismiss suggestion/ }));
-    expect(within(screen.getByRole('article')).getByRole('heading').textContent).not.toBe(promoted);
+    await waitFor(() => expect(within(screen.getByRole('article')).getByRole('heading').textContent).not.toBe(promoted));
     await user.click(screen.getByRole('button', { name: 'Undo' }));
-    expect(within(screen.getByRole('article')).getByRole('heading').textContent).toBe(promoted);
+    await waitFor(() => expect(within(screen.getByRole('article')).getByRole('heading').textContent).toBe(promoted));
 
     // Edit before saving.
     await user.click(within(screen.getByRole('article')).getByRole('button', { name: /Edit before saving/ }));
@@ -117,7 +118,7 @@ describe('Interest to Action journey', () => {
     const card = await screen.findByRole('article');
     await user.click(within(card).getByRole('button', { name: /Save this plan/ }));
     // A brief "Saved" state on the card, then the confirmation screen.
-    expect(await within(card).findByRole('button', { name: 'Plan saved' })).toBeInTheDocument();
+    expect(await within(card).findByRole('button', { name: 'Saved' })).toBeInTheDocument();
     expect(await screen.findByRole('heading', { name: /Plan saved/ }, { timeout: 2000 })).toBeInTheDocument();
     expect(storedPlans()[0]).toMatchObject({ origin: 'suggested', context: { outcome: null, obstacle: null, timeMinutes: null } });
   });

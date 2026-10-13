@@ -101,6 +101,10 @@
   color: var(--ink-2);
 }
 
+.generating__phrase {
+  display: inline-flex;
+}
+
 .generating__spark {
   animation: spark-breathe 2.4s var(--ease-standard) infinite;
 }
@@ -198,7 +202,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .generating__spark {
+  .generating__phrase {
+  display: inline-flex;
+}
+
+.generating__spark {
     animation: none;
   }
   .saved__halo {

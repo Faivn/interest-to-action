@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { m } from 'motion/react';
 import { ChevronRight } from 'lucide-react';
+import { SPRING_PRESS } from '../../lib/motion';
 import { formatRelativeDay } from '../../lib/dates';
 import { prefersReducedMotion } from '../../lib/motion';
 import { StatusBadge } from './StatusBadge';
@@ -48,8 +50,9 @@ export function PlanRow({ plan, index, selected = false, onToggleComplete, onOpe
       style={{ '--i': Math.min(index, 8) } as CSSProperties}
       data-plan-id={plan.id}
     >
-      <button
+      <m.button
         type="button"
+        whileTap={{ scale: 0.88, transition: SPRING_PRESS }}
         role="checkbox"
         aria-checked={done}
         aria-label={`Completed: ${plan.interest}`}
@@ -65,7 +68,7 @@ export function PlanRow({ plan, index, selected = false, onToggleComplete, onOpe
             <span key={i} style={{ '--n': i } as CSSProperties} />
           ))}
         </span>
-      </button>
+      </m.button>
 
       <button type="button" className="plan-row__main" aria-current={selected ? 'true' : undefined} onClick={() => onOpen(plan)}>
         <span className="plan-row__text">

@@ -1,14 +1,16 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { ChevronLeft, Ellipsis, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
 import { IconButton } from '../../components/IconButton';
+import { MenuPopover } from '../../components/MenuPopover';
 import { ProvenanceTag } from '../../components/ProvenanceTag';
 import { Screen, TopBar } from '../../components/Screen';
 import { SegmentedControl } from '../../components/SegmentedControl';
 import { Sheet } from '../../components/Sheet';
 import { useToast } from '../../components/Toast';
 import { formatRelativeDay } from '../../lib/dates';
+import { useMediaQuery } from '../../lib/useMediaQuery';
 import { PlanForm } from './PlanForm';
 import { PlanSentence } from './PlanSentence';
 import { StatusIcon } from './StatusBadge';
@@ -28,6 +30,11 @@ export function PlanDetailScreen({ planId, onBack, embedded = false }: PlanDetai
   const plans = usePlans();
   const toast = useToast();
   const [menuOpen, setMenuOpen] = useState(false);
+  // The top bar is built before the handlers below, so it calls them through refs.
+  const openEditorRef = useRef(() => {});
+  const removeRef = useRef(() => {});
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const popoverMenu = useMediaQuery('(min-width: 600px)');
   const [editing, setEditing] = useState<PlanDraft | null>(null);
   const [errors, setErrors] = useState<DraftErrors>({});
   
@@ -35,7 +42,32 @@ export function PlanDetailScreen({ planId, onBack, embedded = false }: PlanDetai
   const topBar = (
     <TopBar
       leading={embedded ? undefined : <IconButton label="Back to my plans" icon={<ChevronLeft />} onClick={onBack} />}
-      trailing={plan ? <IconButton label="Plan options" icon={<Ellipsis />} onClick={() => setMenuOpen(true)} /> : undefined}
+      trailing={
+        plan ? (
+          <span className="plan-detail__menu-anchor">
+            <IconButton
+              ref={menuButtonRef}
+              label="Plan options"
+              icon={<Ellipsis />}
+              aria-haspopup="menu"
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((o) => !o)}
+            />
+            {popoverMenu && (
+              <MenuPopover
+                open={menuOpen}
+                onClose={() => setMenuOpen(false)}
+                label="Plan options"
+                anchorRef={menuButtonRef}
+                items={[
+                  { label: 'Edit plan', icon: <Pencil size={18} />, onSelect: () => openEditorRef.current() },
+                  { label: 'Delete plan', icon: <Trash2 size={18} />, tone: 'danger', onSelect: () => removeRef.current() },
+                ]}
+              />
+            )}
+          </span>
+        ) : undefined
+      }
     />
   );
 
@@ -101,6 +133,8 @@ export function PlanDetailScreen({ planId, onBack, embedded = false }: PlanDetai
     setMenuOpen(false);
     setEditing(draftFromPlan(plan));
   };
+  openEditorRef.current = openEditor;
+  removeRef.current = remove;
 
   return (
     <Screen topBar={topBar} className={embedded ? 'screen--embedded' : undefined}>
@@ -166,7 +200,7 @@ export function PlanDetailScreen({ planId, onBack, embedded = false }: PlanDetai
         {plan.updatedAt !== plan.createdAt && ` · Updated ${day(plan.updatedAt)}`}
       </p>
 
-      <Sheet open={menuOpen} onClose={() => setMenuOpen(false)} title="Plan options">
+      <Sheet open={menuOpen && !popoverMenu} onClose={() => setMenuOpen(false)} title="Plan options">
         <div className="plan-detail__menu">
           <Button variant="secondary" icon={<Pencil />} onClick={openEditor}>
             Edit plan

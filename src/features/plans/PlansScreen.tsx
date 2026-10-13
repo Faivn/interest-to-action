@@ -6,6 +6,7 @@ import { InlineMessage } from '../../components/InlineMessage';
 import { SegmentedControl } from '../../components/SegmentedControl';
 import { useToast } from '../../components/Toast';
 import { useDelayedFlag } from '../../lib/useDelayedFlag';
+import { RollingNumber } from '../../components/RollingNumber';
 import { PlanList } from './PlanList';
 import { PlanListSkeleton } from './PlanListSkeleton';
 import { selectCompleted, selectCurrent } from './plansReducer';
@@ -75,11 +76,13 @@ export function PlansScreen({ onAddInterest, onOpenPlan, selectedId = null, pane
 
   const isEmpty = ready && plans.plans.length === 0;
 
-  const summary = !ready
-    ? null
-    : plans.plans.length === 0
-      ? 'Small steps, one at a time.'
-      : `${current.length} current · ${completed.length} completed`;
+  const summary = !ready ? null : plans.plans.length === 0 ? (
+    'Small steps, one at a time.'
+  ) : (
+    <>
+      <RollingNumber value={current.length} /> current · <RollingNumber value={completed.length} /> completed
+    </>
+  );
 
   return (
     <div className={`plans-screen${pane ? ' plans-screen--pane' : ''}`}>

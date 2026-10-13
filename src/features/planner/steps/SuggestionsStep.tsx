@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { AnimatePresence, m } from 'motion/react';
 import { ChevronLeft } from 'lucide-react';
 import { Button } from '../../../components/Button';
 import { EmptyState } from '../../../components/EmptyState';
@@ -7,6 +8,8 @@ import { InlineMessage } from '../../../components/InlineMessage';
 import { Screen, TopBar } from '../../../components/Screen';
 import { SparkMark } from '../../../components/SparkMark';
 import { StepIndicator } from '../../../components/StepIndicator';
+import { SPRING_SWAP, SWAP_VARIANTS } from '../../../lib/motion';
+import type { ContextFields } from '../plannerState';
 import { InterestEcho } from '../InterestEcho';
 import { PlanRecommendationCard } from '../PlanCard';
 import { PlanCardSkeleton } from '../PlanCardSkeleton';
@@ -15,6 +18,7 @@ import './steps.css';
 
 interface SuggestionsStepProps {
   interest: string;
+  context: ContextFields;
   suggestions: PlanSuggestion[];
   request: 'idle' | 'loading' | 'error';
   source: Planner['source'];
@@ -77,7 +81,7 @@ export function SuggestionsStep(props: SuggestionsStepProps) {
           We couldn't get suggestions right now. Your interest is saved on this screen.
         </InlineMessage>
       ) : firstLoad ? (
-        <GeneratingState />
+        <GeneratingState context={props.context} />
       ) : suggestions.length === 0 ? (
         <EmptyState title="No suggestions left" ghostRows={0}>
           Try different ideas, adjust your details, or leave without saving.
@@ -132,17 +136,63 @@ export function SuggestionsStep(props: SuggestionsStepProps) {
   );
 }
 
-function GeneratingState() {
+/**
+ * Status lines describe only what the planner is actually given (beUI Reasoning Text, used
+ * honestly): nothing is claimed about the user that they didn't say.
+ */
+function generatingPhrases(context: ContextFields): string[] {
+  const phrases = ['Reading your interest…'];
+  if (context.timeMinutes) phrases.push(context.timeMinutes === 30 ? 'Keeping it to around half an hour…' : `Fitting it into ${context.timeMinutes} minutes…`);
+  if (context.obstacle.trim()) phrases.push('Working around what’s in the way…');
+  if (context.outcome.trim()) phrases.push('Connecting it to what success looks like…');
+  phrases.push('Finding a few small ways to start…');
+  return phrases;
+}
+
+const PHRASE_INTERVAL_MS = 1800;
+
+function GeneratingState({ context }: { context: ContextFields }) {
+  const [phrases] = useState(() => generatingPhrases(context));
+  const [index, setIndex] = useState(0);
   const [slow, setSlow] = useState(false);
+
+  useEffect(() => {
+    // Step through the phrases once, then rest on the last one.
+    if (index >= phrases.length - 1) return;
+    const t = window.setTimeout(() => setIndex((i) => i + 1), PHRASE_INTERVAL_MS);
+    return () => window.clearTimeout(t);
+  }, [index, phrases.length]);
+
   useEffect(() => {
     const t = window.setTimeout(() => setSlow(true), 8000);
     return () => window.clearTimeout(t);
   }, []);
+
+  const phrase = slow ? 'Still working on it. Thanks for waiting.' : phrases[index];
+
   return (
     <section className="generating" aria-busy="true" aria-label="Suggested plans">
-      <p className="generating__caption t-callout" role="status">
+      {/* One steady announcement; the rotating phrases are visual only (DESIGN.md §10.1). */}
+      <p className="visually-hidden" role="status">
+        Generating suggestions.
+      </p>
+      <p className="generating__caption t-callout" aria-hidden="true">
         <SparkMark size={16} className="generating__spark" />
-        {slow ? 'Still working on it. Thanks for waiting.' : 'Finding a few small ways to start…'}
+        <span className="generating__phrase">
+          <AnimatePresence mode="wait" initial={false}>
+            <m.span
+              key={phrase}
+              className="text-shimmer"
+              variants={SWAP_VARIANTS}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={SPRING_SWAP}
+            >
+              {phrase}
+            </m.span>
+          </AnimatePresence>
+        </span>
       </p>
       <PlanCardSkeleton />
     </section>

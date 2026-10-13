@@ -1,14 +1,29 @@
+import { AnimatePresence, m } from 'motion/react';
 import { Check } from 'lucide-react';
+import { SPRING_SWAP, SWAP_VARIANTS } from '../../lib/motion';
 import { STATUS_LABEL, type PlanStatus } from './types';
 import './StatusBadge.css';
 
 /** Status by icon and label as well as colour (docs/design.md §5.2). */
 export function StatusBadge({ status }: { status: PlanStatus }) {
+  // The pill morphs its width and colour while the icon and label swap (beUI Animated Badge).
   return (
-    <span className={`status-badge status-badge--${status} t-caption`}>
-      <StatusIcon status={status} />
-      {STATUS_LABEL[status]}
-    </span>
+    <m.span layout transition={SPRING_SWAP} className={`status-badge status-badge--${status} t-caption`}>
+      <AnimatePresence mode="popLayout" initial={false}>
+        <m.span
+          key={status}
+          className="status-badge__content"
+          variants={SWAP_VARIANTS}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          transition={SPRING_SWAP}
+        >
+          <StatusIcon status={status} />
+          {STATUS_LABEL[status]}
+        </m.span>
+      </AnimatePresence>
+    </m.span>
   );
 }
 

@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { LazyMotion, MotionConfig } from 'motion/react';
 import { ToastProvider } from './components/Toast';
 import { PlannerFlow } from './features/planner/PlannerFlow';
 import { clearPlannerSession } from './features/planner/plannerState';
@@ -13,6 +14,9 @@ import { useMediaQuery } from './lib/useMediaQuery';
 import './App.css';
 
 const ONBOARDED_KEY = 'ita.onboarded';
+
+/** Motion's layout/drag engine arrives as its own chunk after first paint. */
+const loadMotionFeatures = () => import('./lib/motionFeatures').then((mod) => mod.default);
 
 function hasOnboarded(): boolean {
   try {
@@ -37,13 +41,18 @@ interface AppProps {
 
 export function App({ repository, planner }: AppProps) {
   return (
-    <ToastProvider>
-      <PlansProvider repository={repository}>
-        <main>
-          <Routes planner={planner} />
-        </main>
-      </PlansProvider>
-    </ToastProvider>
+    // Motion honours the user's reduced-motion setting everywhere (DESIGN.md §11.3).
+    <MotionConfig reducedMotion="user">
+      <LazyMotion features={loadMotionFeatures} strict>
+        <ToastProvider>
+          <PlansProvider repository={repository}>
+            <main>
+              <Routes planner={planner} />
+            </main>
+          </PlansProvider>
+        </ToastProvider>
+      </LazyMotion>
+    </MotionConfig>
   );
 }
 

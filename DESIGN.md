@@ -500,6 +500,30 @@ Uses the inline message from §8.12.
 - The spark stops breathing and stays at full opacity.
 - The check appears without a draw, and the sparkle burst is removed.
 - Respect Reduce Transparency by replacing the gradient washes with a flat `paper`.
+- In code, `<MotionConfig reducedMotion="user">` applies this to every Motion animation; swipe and drag gestures are turned off.
+
+### 11.4 Springs and Motion Patterns (implementation)
+
+The web app uses **Motion** (`motion/react`, loaded lazily) for interactions that CSS alone can't express well: shared-layout glides, height morphs, drag and label swaps. The presets live in `src/lib/motion.ts` and are adapted from beUI's motion tokens; visuals always use Daybreak tokens.
+
+| Preset | Value | Use |
+|---|---|---|
+| `EASE_OUT` | `cubic-bezier(0.16, 1, 0.3, 1)` (= `--ease-emphasized`) | Drawers and reveals |
+| `SPRING_PRESS` | stiffness 500, damping 30, mass 0.6 | Press feedback (plan-row check, primary save) |
+| `SPRING_SWAP` | stiffness 460, damping 30, mass 0.55 | Label and icon swaps, rolling numbers, status badge |
+| `SPRING_LAYOUT` | stiffness 360, damping 32, mass 0.8 | Shared-layout glides and height morphs (`spring-soft`) |
+| `SPRING_PANEL` | stiffness 420, damping 40, mass 0.5 | Toasts and the options popover |
+
+Patterns in use:
+
+- **Shared-layout indicators:** the chip selection, the segmented-control thumb and the alternatives highlight glide between items (`layoutId`).
+- **Height morph:** the recommendation card and its alternatives drawer spring to their measured height, so swapping plans never jumps.
+- **Stateful save:** "Save this plan" → "Saved ✓" swaps its label with a blur and morphs its width, then the confirmation follows.
+- **Generating status:** a text shimmer with phrases built only from what the user entered (no invented progress).
+- **Feedback:** a gentle field shake on validation errors, stepper values that roll in the direction of change, rolling counts in My Plans, and stacked toasts that can be swiped away.
+- **Sheets and menus:** on phones, sheets can be dragged down to dismiss; on wider screens, Plan options opens as a popover from ⋯.
+
+Avoid decorative motion (tilt, magnetic, shader, marquee, scramble), which conflicts with Daybreak's calm tone (§2.4).
 
 ---
 

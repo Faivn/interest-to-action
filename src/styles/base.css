@@ -130,6 +130,33 @@ svg.lucide * {
   vector-effect: non-scaling-stroke;
 }
 
+/* Text shimmer: a soft highlight sweeps across secondary text (beUI Text Shimmer). */
+.text-shimmer {
+  background: linear-gradient(90deg, var(--ink-2) 0%, var(--ink-2) 40%, var(--ink) 50%, var(--ink-2) 60%, var(--ink-2) 100%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: text-shimmer 2.5s linear infinite;
+}
+
+@keyframes text-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -150% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .text-shimmer {
+    animation: none !important;
+    color: var(--ink-2);
+    background: none;
+  }
+}
+
 .visually-hidden {
   position: absolute !important;
   width: 1px;

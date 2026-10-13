@@ -1,5 +1,7 @@
 import { useId, useRef, type KeyboardEvent } from 'react';
+import { LayoutGroup, m } from 'motion/react';
 import { Check } from 'lucide-react';
+import { SPRING_LAYOUT } from '../lib/motion';
 import './ChipGroup.css';
 
 export interface ChipOption<T> {
@@ -51,29 +53,35 @@ export function ChipGroup<T>({ label, options, value, onChange, optional = false
         </span>
         {optional && <span className="t-caption chip-group__optional">Optional</span>}
       </div>
-      <div role="radiogroup" aria-labelledby={labelId} className="chip-group__chips">
-        {options.map((option, index) => {
-          const selected = index === selectedIndex && Object.is(option.value, value);
-          return (
-            <button
-              key={option.label}
-              ref={(el) => {
-                refs.current[index] = el;
-              }}
-              type="button"
-              role="radio"
-              aria-checked={selected}
-              tabIndex={index === selectedIndex ? 0 : -1}
-              className="chip"
-              onClick={() => onChange(option.value)}
-              onKeyDown={(e) => move(e, index)}
-            >
-              {selected && <Check aria-hidden="true" size={16} />}
-              {option.label}
-            </button>
-          );
-        })}
-      </div>
+      {/* The selection glides between chips (beUI Radio Group's shared-layout indicator). */}
+      <LayoutGroup id={labelId}>
+        <div role="radiogroup" aria-labelledby={labelId} className="chip-group__chips">
+          {options.map((option, index) => {
+            const selected = index === selectedIndex && Object.is(option.value, value);
+            return (
+              <button
+                key={option.label}
+                ref={(el) => {
+                  refs.current[index] = el;
+                }}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                tabIndex={index === selectedIndex ? 0 : -1}
+                className="chip"
+                onClick={() => onChange(option.value)}
+                onKeyDown={(e) => move(e, index)}
+              >
+                {selected && (
+                  <m.span layoutId="chip-selection" className="chip__selection" transition={SPRING_LAYOUT} aria-hidden="true" />
+                )}
+                {selected && <Check aria-hidden="true" size={16} />}
+                {option.label}
+              </button>
+            );
+          })}
+        </div>
+      </LayoutGroup>
     </div>
   );
 }

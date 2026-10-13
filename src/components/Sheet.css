@@ -23,6 +23,7 @@
 }
 
 .sheet__panel {
+  background: var(--surface);
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -31,6 +32,8 @@
 
 .sheet__grabber {
   flex-shrink: 0;
+  touch-action: none;
+  cursor: grab;
   width: 36px;
   height: 5px;
   margin: var(--space-2) auto 0;
@@ -120,4 +123,8 @@
   .sheet[open] {
     animation: sheet-fade var(--dur-fast) linear;
   }
+}
+
+.sheet__header {
+  touch-action: none;
 }

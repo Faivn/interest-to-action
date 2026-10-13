@@ -10,7 +10,21 @@
   pointer-events: none;
 }
 
+.toast-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  max-width: var(--content-max);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
 .toast {
+  touch-action: pan-y;
+  cursor: grab;
   display: flex;
   align-items: center;
   gap: var(--space-3);
@@ -23,7 +37,10 @@
   color: var(--toast-fg);
   box-shadow: var(--elev-1), 0 0 0 1px var(--line);
   pointer-events: auto;
-  animation: toast-in var(--dur-base) var(--ease-enter);
+}
+
+.toast:active {
+  cursor: grabbing;
 }
 
 .toast__icon {
@@ -74,23 +91,5 @@ body:not(:has(.screen__actions, .plans-screen__add)) .toast-region {
   .toast {
     width: auto;
     min-width: 320px;
-  }
-}
-
-@keyframes toast-in {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .toast {
-    animation-name: toast-fade;
-  }
-  @keyframes toast-fade {
-    from {
-      opacity: 0;
-    }
   }
 }

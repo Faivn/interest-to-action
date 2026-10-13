@@ -73,3 +73,8 @@
 .screen--embedded {
   min-height: 0;
 }
+
+.plan-detail__menu-anchor {
+  position: relative;
+  display: inline-flex;
+}

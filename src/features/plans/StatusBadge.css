@@ -9,6 +9,19 @@
   white-space: nowrap;
 }
 
+.status-badge {
+  overflow: hidden;
+  transition:
+    background-color var(--dur-fast) var(--ease-standard),
+    color var(--dur-fast) var(--ease-standard);
+}
+
+.status-badge__content {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
 .status-badge--not-started {
   background: var(--sunken);
   color: var(--ink-2);
