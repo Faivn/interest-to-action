@@ -72,7 +72,7 @@ describe('plan handler', () => {
     expect(result.kind).toBe('suggestions');
     expect(result.suggestions[0]).toMatchObject({
       trigger: 'I finish breakfast', // leading "When" removed
-      action: 'watch the first lesson of a free UI animation course', // leading "I'll" removed
+      action: 'Watch the first lesson of a free UI animation course', // leading "I'll" removed, capitalised for the card
       durationMinutes: 10,
     });
   });

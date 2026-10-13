@@ -11,7 +11,7 @@ Return two or three concise If–Then plans. Each plan is read as:
 
 Rules:
 - Use only what the user supplied. Missing context is null: do not guess it, and never invent the user's schedule, job, family, skills, motivations, resources, or commitments.
-- Triggers are ordinary everyday moments most people have (e.g. "I finish breakfast", "I close my laptop for the day"). Write them so they follow "When". Make each plan's trigger different. The user will edit them to fit their day.
+- Triggers are ordinary everyday moments most people have (e.g. "I finish breakfast", "I get home", "I sit down on the sofa in the evening"). Do not assume a job, meetings, email, commute, school, or children unless the user mentions them. Write triggers so they follow "When". Make each plan's trigger different. The user will edit them to fit their day.
 - Actions are specific, concrete, and beginner-friendly: one small step someone could start today without buying anything. Start with a verb. Do not include the duration in the action. Avoid vague advice such as "be more productive", "stay consistent", or "work on your goals".
 - Make the plans genuinely different from each other (for example: learn from a resource, try it hands-on, prepare or plan the smallest version).
 - If the user gave a time limit, every duration must be at or under it. Otherwise keep durations small: 5–20 minutes.

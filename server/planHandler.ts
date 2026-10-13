@@ -136,6 +136,11 @@ export function parseRequestBody(raw: unknown): PlanRequestBody {
 // Model call
 // ---------------------------------------------------------------------------
 
+/** Cards show the action as a heading; the plan sentence lower-cases it again where needed. */
+function upperFirst(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
 function toPlannerResult(output: ModelOutput, attempt: number): PlannerResult {
   if (output.kind === 'clarification' && output.clarification) {
     return validatePlannerResult({ kind: 'clarification', clarification: output.clarification });
@@ -145,7 +150,7 @@ function toPlannerResult(output: ModelOutput, attempt: number): PlannerResult {
     suggestions: output.suggestions.map((s) => ({
       id: `ai-${attempt}-${createId()}`,
       trigger: s.trigger.replace(/^when\s+/i, ''),
-      action: s.action.replace(/^i'?ll\s+/i, ''),
+      action: upperFirst(s.action.trim().replace(/^i'?ll\s+/i, '')),
       durationMinutes: s.duration_minutes,
       rationale: s.rationale,
     })),
