@@ -46,25 +46,39 @@ describe('Interest to Action journey', () => {
     await user.click(screen.getByRole('radio', { name: '10 min' }));
     await user.click(screen.getByRole('button', { name: 'Suggest next steps' }));
 
-    // Suggestions: two or three, on-topic, fitting the time given, clearly from the demo planner.
-    const cards = await screen.findAllByRole('article');
-    expect(cards.length).toBeGreaterThanOrEqual(2);
-    expect(cards.length).toBeLessThanOrEqual(3);
-    for (const card of cards) {
-      expect(within(card).getByRole('heading').textContent).toContain('UI animation');
-      expect(Number(within(card).getByText(/\d+ min/).textContent!.match(/\d+/)![0])).toBeLessThanOrEqual(10);
-    }
+    // Suggestions: one recommended plan plus alternatives, on-topic, within the time given.
+    const card = await screen.findByRole('article');
+    expect(within(card).getByRole('heading').textContent).toContain('UI animation');
+    expect(within(card).getByText('Plan 1 of 3')).toBeInTheDocument();
     expect(screen.getByText(/built-in demo planner, not a live AI model/)).toBeInTheDocument();
 
-    // Dismiss one, then undo.
-    const firstAction = within(cards[0]).getByRole('heading').textContent!;
-    await user.click(within(cards[0]).getByRole('button', { name: /Dismiss suggestion/ }));
-    expect(screen.queryByRole('heading', { name: firstAction })).not.toBeInTheDocument();
+    const alternatives = within(card).getByRole('button', { name: 'Alternatives' });
+    expect(alternatives).toHaveAttribute('aria-expanded', 'false');
+    await user.click(alternatives);
+    expect(alternatives).toHaveAttribute('aria-expanded', 'true');
+    const options = within(card).getAllByRole('button', { name: /Show this plan instead/ });
+    expect(options).toHaveLength(2);
+    for (const option of options) {
+      const label = option.getAttribute('aria-label')!;
+      expect(label).toContain('UI animation');
+      expect(Number(label.match(/for (\d+) minutes/)![1])).toBeLessThanOrEqual(10);
+    }
+
+    // Promote an alternative to the recommendation.
+    const firstAction = within(card).getByRole('heading').textContent!;
+    await user.click(options[0]);
+    const promoted = within(card).getByRole('heading').textContent!;
+    expect(promoted).not.toBe(firstAction);
+    expect(within(card).getByText('Plan 2 of 3')).toBeInTheDocument();
+
+    // Dismiss the recommendation, then undo: it comes back as the recommendation.
+    await user.click(within(card).getByRole('button', { name: /Dismiss suggestion/ }));
+    expect(within(screen.getByRole('article')).getByRole('heading').textContent).not.toBe(promoted);
     await user.click(screen.getByRole('button', { name: 'Undo' }));
-    expect(screen.getByRole('heading', { name: firstAction })).toBeInTheDocument();
+    expect(within(screen.getByRole('article')).getByRole('heading').textContent).toBe(promoted);
 
     // Edit before saving.
-    await user.click(within(screen.getAllByRole('article')[0]).getByRole('button', { name: /Edit before saving/ }));
+    await user.click(within(screen.getByRole('article')).getByRole('button', { name: /Edit before saving/ }));
     expect(screen.getByRole('heading', { name: 'Make it yours' })).toBeInTheDocument();
     const when = screen.getByLabelText('When');
     await user.clear(when);
@@ -100,9 +114,11 @@ describe('Interest to Action journey', () => {
     await startFromWelcome(user);
     await captureInterest(user, 'Write a short story');
     await user.click(screen.getByRole('button', { name: 'Skip' }));
-    const [card] = await screen.findAllByRole('article');
+    const card = await screen.findByRole('article');
     await user.click(within(card).getByRole('button', { name: /Save this plan/ }));
-    expect(await screen.findByRole('heading', { name: /Plan saved/ })).toBeInTheDocument();
+    // A brief "Saved" state on the card, then the confirmation screen.
+    expect(await within(card).findByRole('button', { name: 'Plan saved' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: /Plan saved/ }, { timeout: 2000 })).toBeInTheDocument();
     expect(storedPlans()[0]).toMatchObject({ origin: 'suggested', context: { outcome: null, obstacle: null, timeMinutes: null } });
   });
 
@@ -116,8 +132,12 @@ describe('Interest to Action journey', () => {
     await user.click(screen.getByRole('radio', { name: 'Product design' }));
     await user.click(screen.getByRole('button', { name: 'Continue' }));
 
-    const cards = await screen.findAllByRole('article');
-    expect(cards.every((c) => within(c).getByRole('heading').textContent!.includes('product design'))).toBe(true);
+    const card = await screen.findByRole('article');
+    expect(within(card).getByRole('heading').textContent).toContain('product design');
+    await user.click(within(card).getByRole('button', { name: 'Alternatives' }));
+    for (const option of within(card).getAllByRole('button', { name: /Show this plan instead/ })) {
+      expect(option.getAttribute('aria-label')).toContain('product design');
+    }
   });
 
   it('keeps the interest and offers a retry when suggestions fail', async () => {
@@ -145,7 +165,7 @@ describe('Interest to Action journey', () => {
     await startFromWelcome(user);
     await captureInterest(user, 'Learn Spanish');
     await user.click(screen.getByRole('button', { name: 'Skip' }));
-    await screen.findAllByRole('article');
+    await screen.findByRole('article');
     await user.click(screen.getByRole('button', { name: 'None of these' }));
 
     expect(await screen.findByRole('heading', { name: 'No plans yet' })).toBeInTheDocument();

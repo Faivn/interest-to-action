@@ -72,6 +72,13 @@
   background: color-mix(in srgb, var(--ink) 92%, var(--paper));
 }
 
+/* Confirmed state of a primary action, e.g. "Saved ✓" (fern = success, DESIGN.md §3.2). */
+.btn--success {
+  min-height: 48px;
+  background: var(--fern);
+  color: var(--surface);
+}
+
 .btn--secondary {
   background: var(--surface);
   color: var(--ink);

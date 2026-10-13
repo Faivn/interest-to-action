@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes, ReactNode, Ref } from 'react';
 import './Button.css';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'text' | 'ai' | 'danger-text';
+export type ButtonVariant = 'primary' | 'secondary' | 'text' | 'ai' | 'danger-text' | 'success';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;

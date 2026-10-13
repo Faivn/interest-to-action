@@ -45,7 +45,8 @@ export function SavedStep({ plan, onViewPlans, onAddAnother }: SavedStepProps) {
         </h1>
         <section className="saved__plan" aria-label="Your plan">
           <p className="t-interest saved__interest">{plan.interest}</p>
-          <PlanSentence plan={plan} className="t-plan-action" />
+          {/* Streams in after the check draws and the headline settles (DESIGN.md §11.2). */}
+          <PlanSentence plan={plan} className="t-plan-action" stream={{ startMs: 520 }} />
         </section>
         <p className="t-callout saved__note">You'll find it in My plans, where you can mark progress or change it anytime.</p>
       </div>

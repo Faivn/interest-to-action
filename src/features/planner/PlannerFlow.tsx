@@ -21,16 +21,18 @@ import { SuggestionsStep } from './steps/SuggestionsStep';
 import type { Planner, PlanSuggestion } from './types';
 import { validatePlannerResult } from './validatePlannerResult';
 
-/** Keeps keyboard focus in the list when a card leaves or returns (the focused control disappears). */
-function focusSuggestionSoon(id: string | undefined) {
+/** Keeps keyboard focus on the card after its plan changes (the focused control re-renders or leaves). */
+function focusSuggestionSoon() {
   requestAnimationFrame(() => {
-    const card = id ? document.querySelector(`[data-suggestion-id="${CSS.escape(id)}"]`) : null;
     const target =
-      card?.querySelector<HTMLElement>('.plan-card__dismiss') ??
+      document.querySelector<HTMLElement>('.plan-card .plan-card__dismiss') ??
       document.querySelector<HTMLElement>('.suggestions__more button');
     target?.focus();
   });
 }
+
+/** How long the recommendation card shows "Saved ✓" before the confirmation screen. */
+const SAVED_CONFIRM_MS = 600;
 
 const STEP_ORDER: Record<PlannerState['step'], number> = {
   capture: 0,
@@ -55,6 +57,10 @@ export function PlannerFlow({ planner, navigate }: PlannerFlowProps) {
   const toast = useToast();
   const [state, dispatch] = useReducer(plannerReducer, undefined, () => loadPlannerSession() ?? INITIAL_PLANNER_STATE);
   const [savingId, setSavingId] = useState<string | null>(null);
+  const [savedId, setSavedId] = useState<string | null>(null);
+  const [promote, setPromote] = useState<{ id: string; nonce: number } | null>(null);
+  const savedTimer = useRef<number | undefined>(undefined);
+  useEffect(() => () => window.clearTimeout(savedTimer.current), []);
   const [saveFailed, setSaveFailed] = useState(false);
 
   const stateRef = useRef(state);
@@ -121,7 +127,11 @@ export function PlannerFlow({ planner, navigate }: PlannerFlowProps) {
     });
   };
 
-  const save = async (suggestion: PlanSuggestion, draft: PlanDraft) => {
+  /**
+   * Saves only after an explicit choice. From the recommendation card the button shows a brief
+   * "Saved ✓" before the confirmation screen; from Edit Plan it moves on straight away.
+   */
+  const save = async (suggestion: PlanSuggestion, draft: PlanDraft, { confirmMs = 0 } = {}) => {
     setSavingId(suggestion.id);
     setSaveFailed(false);
     try {
@@ -132,7 +142,15 @@ export function PlannerFlow({ planner, navigate }: PlannerFlowProps) {
         rationale: suggestion.rationale,
         origin: sameDraft(draft, suggestion) ? 'suggested' : 'edited',
       });
-      dispatch({ type: 'saved', plan });
+      if (confirmMs > 0) {
+        setSavedId(suggestion.id);
+        savedTimer.current = window.setTimeout(() => {
+          setSavedId(null);
+          dispatch({ type: 'saved', plan });
+        }, confirmMs);
+      } else {
+        dispatch({ type: 'saved', plan });
+      }
     } catch {
       setSaveFailed(true);
     } finally {
@@ -141,17 +159,17 @@ export function PlannerFlow({ planner, navigate }: PlannerFlowProps) {
   };
 
   const dismiss = (suggestion: PlanSuggestion) => {
-    const list = stateRef.current.suggestions;
-    const index = list.findIndex((s) => s.id === suggestion.id);
-    const neighbour = list[index + 1] ?? list[index - 1];
+    const index = stateRef.current.suggestions.findIndex((s) => s.id === suggestion.id);
     dispatch({ type: 'suggestionDismissed', id: suggestion.id });
-    focusSuggestionSoon(neighbour?.id);
+    focusSuggestionSoon();
     toast.show({
       message: 'Suggestion dismissed.',
       actionLabel: 'Undo',
       onAction: () => {
         dispatch({ type: 'suggestionRestored', suggestion, index });
-        focusSuggestionSoon(suggestion.id);
+        // Bring it back as the recommendation it was.
+        setPromote({ id: suggestion.id, nonce: Date.now() });
+        focusSuggestionSoon();
       },
     });
   };
@@ -227,6 +245,8 @@ export function PlannerFlow({ planner, navigate }: PlannerFlowProps) {
             request={state.request}
             source={planner.source}
             savingId={savingId}
+            savedId={savedId}
+            promote={promote}
             saveFailed={saveFailed}
             onBack={() => {
               stopRequest();
@@ -238,7 +258,7 @@ export function PlannerFlow({ planner, navigate }: PlannerFlowProps) {
             }}
             onRetry={() => void generate(false)}
             onRegenerate={() => void generate(true)}
-            onSave={(s) => void save(s, s)}
+            onSave={(s) => void save(s, s, { confirmMs: SAVED_CONFIRM_MS })}
             onEdit={(s) => {
               setSaveFailed(false);
               dispatch({ type: 'editStarted', suggestion: s });

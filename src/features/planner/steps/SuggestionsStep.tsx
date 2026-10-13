@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import { Button } from '../../../components/Button';
 import { EmptyState } from '../../../components/EmptyState';
@@ -7,9 +7,8 @@ import { InlineMessage } from '../../../components/InlineMessage';
 import { Screen, TopBar } from '../../../components/Screen';
 import { SparkMark } from '../../../components/SparkMark';
 import { StepIndicator } from '../../../components/StepIndicator';
-import { prefersReducedMotion } from '../../../lib/motion';
 import { InterestEcho } from '../InterestEcho';
-import { PlanCard } from '../PlanCard';
+import { PlanRecommendationCard } from '../PlanCard';
 import { PlanCardSkeleton } from '../PlanCardSkeleton';
 import type { Planner, PlanSuggestion } from '../types';
 import './steps.css';
@@ -20,6 +19,8 @@ interface SuggestionsStepProps {
   request: 'idle' | 'loading' | 'error';
   source: Planner['source'];
   savingId: string | null;
+  savedId: string | null;
+  promote: { id: string; nonce: number } | null;
   saveFailed: boolean;
   onBack: () => void;
   onEditDetails: () => void;
@@ -31,29 +32,13 @@ interface SuggestionsStepProps {
   onNoneOfThese: () => void;
 }
 
-/** Plays the "chosen" moment before saving (DESIGN.md §11.2). */
-const CHOOSE_DELAY_MS = 280;
-
 /** docs/design.md §4.5 */
 export function SuggestionsStep(props: SuggestionsStepProps) {
-  const { interest, suggestions, request, source, savingId, saveFailed } = props;
-  const [choosingId, setChoosingId] = useState<string | null>(null);
-  const timer = useRef<number | undefined>(undefined);
-  useEffect(() => () => window.clearTimeout(timer.current), []);
-  useEffect(() => {
-    if (saveFailed) setChoosingId(null);
-  }, [saveFailed]);
-
+  const { interest, suggestions, request, source, savingId, savedId, saveFailed } = props;
   const loading = request === 'loading';
   const firstLoad = loading && suggestions.length === 0;
   const regenerating = loading && suggestions.length > 0;
-  const activeId = choosingId ?? savingId;
-
-  const choose = (suggestion: PlanSuggestion) => {
-    if (activeId) return;
-    setChoosingId(suggestion.id);
-    timer.current = window.setTimeout(() => props.onSave(suggestion), prefersReducedMotion() ? 0 : CHOOSE_DELAY_MS);
-  };
+  const locked = savingId !== null || savedId !== null;
 
   return (
     <Screen
@@ -108,19 +93,16 @@ export function SuggestionsStep(props: SuggestionsStepProps) {
               Finding different ideas…
             </span>
           )}
-          {suggestions.map((suggestion, index) => (
-            <PlanCard
-              key={suggestion.id}
-              suggestion={suggestion}
-              position={index + 1}
-              total={suggestions.length}
-              state={activeId ? (activeId === suggestion.id ? 'chosen' : 'muted') : 'default'}
-              busy={loading || activeId !== null}
-              onSave={() => choose(suggestion)}
-              onEdit={() => props.onEdit(suggestion)}
-              onDismiss={() => props.onDismiss(suggestion)}
-            />
-          ))}
+          <PlanRecommendationCard
+            suggestions={suggestions}
+            busy={loading}
+            savingId={savingId}
+            savedId={savedId}
+            promote={props.promote}
+            onSave={props.onSave}
+            onEdit={props.onEdit}
+            onDismiss={props.onDismiss}
+          />
         </section>
       )}
 
@@ -130,12 +112,12 @@ export function SuggestionsStep(props: SuggestionsStepProps) {
             variant="ai"
             icon={<SparkMark size={18} />}
             loading={regenerating}
-            disabled={loading || activeId !== null}
+            disabled={loading || locked}
             onClick={props.onRegenerate}
           >
             Show different ideas
           </Button>
-          <Button variant="text" onClick={props.onNoneOfThese} disabled={activeId !== null}>
+          <Button variant="text" onClick={props.onNoneOfThese} disabled={locked}>
             None of these
           </Button>
         </div>
@@ -162,9 +144,7 @@ function GeneratingState() {
         <SparkMark size={16} className="generating__spark" />
         {slow ? 'Still working on it. Thanks for waiting.' : 'Finding a few small ways to start…'}
       </p>
-      {[0, 1, 2].map((i) => (
-        <PlanCardSkeleton key={i} index={i} />
-      ))}
+      <PlanCardSkeleton />
     </section>
   );
 }

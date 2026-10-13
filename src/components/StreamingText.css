@@ -1,0 +1,17 @@
+/* Word-by-word reveal: opacity and a soft-to-sharp blur only, so line layout never moves. */
+.stream-word {
+  animation: stream-word-in 360ms var(--ease-enter) both;
+}
+
+@keyframes stream-word-in {
+  from {
+    opacity: 0;
+    filter: blur(3px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stream-word {
+    animation: none;
+  }
+}

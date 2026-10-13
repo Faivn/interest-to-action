@@ -1,8 +1,10 @@
+/* ─────────────────────────────────────────────────────────
+ * Plan recommendation card (DESIGN.md §8.6 + recommendation pattern)
+ * ───────────────────────────────────────────────────────── */
 .plan-card {
   position: relative;
   display: flex;
   flex-direction: column;
-  padding: var(--space-5);
   border-radius: var(--radius-lg);
   background: var(--surface);
   box-shadow: 0 0 0 1px var(--line);
@@ -12,12 +14,13 @@
     transform var(--dur-base) var(--ease-standard),
     box-shadow var(--dur-fast) var(--ease-standard);
   animation: plan-card-in var(--dur-base) var(--ease-enter) both;
-  animation-delay: calc(var(--i, 0) * 60ms);
 }
 
+/* Chosen: a 3px daybreak top edge draws in from the left (DESIGN.md §11.2). */
 .plan-card::before {
   content: '';
   position: absolute;
+  z-index: 1;
   inset: 0 0 auto;
   height: 3px;
   background: var(--gradient-daybreak);
@@ -32,7 +35,6 @@
 }
 
 .plan-card--chosen {
-  transform: translateY(-2px);
   box-shadow: 0 0 0 1px var(--line), var(--elev-1);
 }
 
@@ -40,11 +42,7 @@
   transform: scaleX(1);
 }
 
-.plan-card--muted {
-  opacity: 0.4;
-}
-
-/* Regenerating: cards stay in place at 50% while a shimmer sweeps across (DESIGN.md §8.6). */
+/* Regenerating: the card stays in place at 50% while a shimmer sweeps across. */
 .suggestions--regenerating .plan-card::after {
   content: '';
   position: absolute;
@@ -64,30 +62,42 @@
   }
 }
 
+/* ---------- head: provenance, Edit, dismiss ---------- */
 .plan-card__head {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: var(--space-2);
   min-height: 44px;
-  margin: calc(var(--space-3) * -1) calc(var(--space-3) * -1) 0 0;
+  padding: var(--space-2) var(--space-2) 0 var(--space-5);
 }
 
-/* "WHEN … ✦ Suggested" — the tag sits at the right, beside the dismiss control (DESIGN.md §8.6). */
-.plan-card__head .provenance {
-  margin-left: auto;
+.plan-card__head-actions {
+  display: flex;
+  align-items: center;
+}
+
+.plan-card__edit {
+  padding: 0 var(--space-3);
+}
+
+/* ---------- body: WHEN → bridge → I'LL ---------- */
+.plan-card__body {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-2) var(--space-5) var(--space-4);
+  animation: plan-card-body-in 180ms var(--ease-enter) both;
 }
 
 .plan-card__when-label {
   color: var(--ember-text);
 }
 
-
-
 .plan-card__trigger {
+  margin-top: 2px;
   color: var(--ink);
 }
 
-/* The bridge: trigger leads to action (DESIGN.md §1) */
 .plan-card__bridge {
   width: 0;
   height: 16px;
@@ -119,7 +129,7 @@
 }
 
 .plan-card__why {
-  margin-top: var(--space-3);
+  margin-top: var(--space-2);
   color: var(--ink-2);
 }
 
@@ -145,33 +155,140 @@
   transform: rotate(180deg);
 }
 
-.plan-card__why > p {
-  padding-bottom: var(--space-1);
+/* Streaming presentation: the duration and rationale follow the text. */
+.plan-card__body--streaming .plan-card__duration,
+.plan-card__body--streaming .plan-card__why {
+  animation: plan-card-settle var(--dur-base) var(--ease-enter) both;
+  animation-delay: var(--reveal-at, 0ms);
 }
 
-.plan-card__actions {
-  display: flex;
-  gap: var(--space-3);
-  margin-top: var(--space-3);
-  padding-top: var(--space-4);
+/* ---------- alternatives drawer ---------- */
+.plan-card__drawer {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 300ms var(--ease-emphasized),
+    opacity 300ms var(--ease-emphasized);
+}
+
+.plan-card__drawer--open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.plan-card__drawer-clip {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.plan-card__drawer-body {
+  padding: var(--space-2) var(--space-3) var(--space-3);
   border-top: 1px solid var(--line);
 }
 
-.plan-card__actions .btn--primary {
-  flex: 1;
-  min-height: 48px;
+.plan-card__drawer-title {
+  padding: var(--space-1) var(--space-2) var(--space-1);
+  color: var(--ink-3);
 }
 
-.plan-card__actions .btn--secondary {
-  min-width: 96px;
+.plan-card__options {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.plan-card__option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: 44px;
+  padding: var(--space-2);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  transition: background-color var(--dur-instant) var(--ease-standard);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.plan-card__option:hover:not(:disabled) {
+  background: var(--sunken);
+}
+
+.plan-card__option:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.plan-card__option-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--text-callout);
+  line-height: var(--text-callout-lh);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.plan-card__option-meta {
+  flex-shrink: 0;
+  color: var(--ink-3);
+}
+
+/* ---------- footer ---------- */
+.plan-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-top: 1px solid var(--line);
+}
+
+.plan-card__position {
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+
+.plan-card__footer-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.plan-card__footer-actions .btn {
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 var(--space-4);
+}
+
+.plan-card__alternatives .btn__content {
+  flex-direction: row-reverse;
+}
+
+.plan-card__chevron {
+  transition: transform var(--dur-base) var(--ease-emphasized);
+}
+
+.plan-card__alternatives[aria-expanded='true'] .plan-card__chevron {
+  transform: rotate(180deg);
 }
 
 @media (max-width: 374px) {
-  .plan-card__actions {
+  .plan-card__footer {
     flex-direction: column;
+    align-items: stretch;
+  }
+  .plan-card__footer-actions .btn {
+    flex: 1;
   }
 }
 
+/* ---------- motion ---------- */
 @keyframes plan-card-in {
   from {
     opacity: 0;
@@ -179,25 +296,37 @@
   }
 }
 
+@keyframes plan-card-body-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes plan-card-settle {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+    visibility: hidden;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .plan-card {
-    animation-name: plan-card-fade;
-    animation-delay: 0ms;
+    animation-name: plan-card-body-in;
   }
-  @keyframes plan-card-fade {
-    from {
-      opacity: 0;
-    }
-  }
-  .plan-card--chosen,
   .plan-card:not(.plan-card--skeleton):hover {
     transform: none;
   }
-  .suggestions--regenerating .plan-card::after {
-    animation: none;
-    display: none;
-  }
-  .plan-card::before {
+  .plan-card::before,
+  .plan-card__drawer,
+  .plan-card__chevron {
     transition: none;
+  }
+  .plan-card__body--streaming .plan-card__duration,
+  .plan-card__body--streaming .plan-card__why {
+    animation: none;
+  }
+  .suggestions--regenerating .plan-card::after {
+    display: none;
   }
 }
