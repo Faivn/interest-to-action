@@ -2,7 +2,10 @@ import '@testing-library/jest-dom/vitest';
 import { afterEach } from 'vitest';
 import { cleanup } from '@testing-library/react';
 
+const isBrowserLike = typeof window !== 'undefined';
+
 afterEach(() => {
+  if (!isBrowserLike) return; // server tests run in the node environment
   cleanup();
   window.localStorage.clear();
   window.sessionStorage.clear();
@@ -19,7 +22,7 @@ if (typeof HTMLDialogElement !== 'undefined' && !HTMLDialogElement.prototype.sho
   };
 }
 
-if (!window.matchMedia) {
+if (isBrowserLike && !window.matchMedia) {
   window.matchMedia = (query: string) =>
     ({
       matches: query.includes('reduce'), // run tests with reduced motion: no animation delays
