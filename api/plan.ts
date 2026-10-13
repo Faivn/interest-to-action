@@ -1,4 +1,5 @@
-import { createPlanHandler } from '../server/planHandler';
+// Vercel compiles each file to Node ESM, so relative imports on this path need explicit .js extensions.
+import { createPlanHandler } from '../server/planHandler.js';
 
 /**
  * Vercel Function: /api/plan

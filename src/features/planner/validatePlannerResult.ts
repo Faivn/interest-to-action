@@ -1,5 +1,5 @@
-import { MAX_DURATION_MINUTES } from '../plans/types';
-import type { PlannerResult, PlanSuggestion } from './types';
+import { MAX_DURATION_MINUTES } from '../plans/types.js';
+import type { PlannerResult, PlanSuggestion } from './types.js';
 
 export class InvalidPlannerResponse extends Error {
   constructor(message: string) {

@@ -1,4 +1,4 @@
-import type { PlanningInput } from '../src/features/planner/types';
+import type { PlanningInput } from '../src/features/planner/types.js';
 
 /**
  * System instruction, derived from docs/ai-approach.md §3 and §6.

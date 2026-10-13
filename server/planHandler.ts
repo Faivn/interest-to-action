@@ -1,9 +1,9 @@
-import { createId } from '../src/lib/id';
-import type { PlannerResult, PlanningInput } from '../src/features/planner/types';
-import { InvalidPlannerResponse, validatePlannerResult } from '../src/features/planner/validatePlannerResult';
-import { buildUserMessage, SYSTEM_PROMPT } from './prompt';
-import { createRateLimiter } from './rateLimit';
-import { planSchema, type ModelOutput } from './schema';
+import { createId } from '../src/lib/id.js';
+import type { PlannerResult, PlanningInput } from '../src/features/planner/types.js';
+import { InvalidPlannerResponse, validatePlannerResult } from '../src/features/planner/validatePlannerResult.js';
+import { buildUserMessage, SYSTEM_PROMPT } from './prompt.js';
+import { createRateLimiter } from './rateLimit.js';
+import { planSchema, type ModelOutput } from './schema.js';
 
 /**
  * Server-side planning endpoint (docs/ai-approach.md §4): validates input, calls Groq with a
