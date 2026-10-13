@@ -1,0 +1,21 @@
+.task-skeleton {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.task-skeleton__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  min-height: 72px;
+  padding: var(--space-2) var(--space-5) var(--space-2) calc(var(--space-3) + 8px);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--line);
+}
+
+.task-skeleton__text {
+  display: grid;
+  flex: 1;
+  gap: var(--space-2);
+}

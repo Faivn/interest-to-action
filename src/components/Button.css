@@ -1,0 +1,152 @@
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  min-height: 48px;
+  padding: 0 var(--space-6);
+  border: 0;
+  border-radius: var(--radius-full);
+  font-family: var(--font-ui);
+  font-size: 0.9375rem;
+  line-height: 1.3333;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    transform var(--dur-instant) var(--ease-standard),
+    background-color var(--dur-fast) var(--ease-standard),
+    border-color var(--dur-fast) var(--ease-standard),
+    opacity var(--dur-fast) var(--ease-standard);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn__content {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.btn__content > span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.btn__icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.btn--full {
+  width: 100%;
+}
+
+/* Primary — ink pill, one per screen (DESIGN.md §8.1) */
+.btn--primary {
+  min-height: 56px;
+  background: var(--ink);
+  color: var(--on-ink);
+}
+.btn--primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--ink) 92%, var(--paper));
+}
+
+.btn--secondary {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+}
+.btn--secondary:hover:not(:disabled) {
+  background: var(--sunken);
+}
+
+.btn--ai {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--lilac);
+}
+.btn--ai .btn__icon {
+  color: var(--lilac-text);
+}
+
+.btn--text,
+.btn--danger-text {
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  background: transparent;
+  color: var(--ink-2);
+}
+.btn--text:hover:not(:disabled) {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.btn--danger-text {
+  color: var(--rose);
+}
+.btn--danger-text:hover:not(:disabled) {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Loading: keep width, swap label for a 3-dot pulse */
+.btn--loading .btn__content {
+  visibility: hidden;
+}
+.btn__dots {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.btn__dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: btn-dot 1s var(--ease-standard) infinite;
+}
+.btn__dots span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.btn__dots span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@keyframes btn-dot {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn:active:not(:disabled) {
+    transform: none;
+  }
+  .btn__dots span {
+    animation: none;
+    opacity: 0.7;
+  }
+}

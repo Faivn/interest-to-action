@@ -1,0 +1,123 @@
+.sheet {
+  width: 100%;
+  max-width: 100%;
+  max-height: calc(100dvh - var(--space-10));
+  margin: auto 0 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--elev-2);
+  overflow: hidden;
+}
+
+.sheet[open] {
+  display: flex;
+  animation: sheet-up var(--dur-slow) var(--ease-standard);
+}
+
+.sheet::backdrop {
+  background: var(--scrim);
+  animation: sheet-fade var(--dur-slow) var(--ease-standard);
+}
+
+.sheet__panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: inherit;
+}
+
+.sheet__grabber {
+  flex-shrink: 0;
+  width: 36px;
+  height: 5px;
+  margin: var(--space-2) auto 0;
+  border-radius: var(--radius-full);
+  background: var(--line-strong);
+  opacity: 0.6;
+}
+
+.sheet__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-3) 0 var(--gutter);
+}
+
+.sheet__header h2 {
+  padding-top: var(--space-2);
+}
+
+.sheet__description {
+  margin-top: var(--space-1);
+  color: var(--ink-2);
+}
+
+.sheet__body {
+  display: grid;
+  gap: var(--space-6);
+  padding: var(--space-5) var(--gutter) var(--space-6);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.sheet__footer {
+  display: flex;
+  flex-direction: column; /* primary first: on top in thumb reach */
+  gap: var(--space-2);
+  padding: var(--space-4) var(--gutter) calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+}
+
+@media (min-width: 600px) {
+  .sheet {
+    width: min(480px, calc(100% - var(--space-8) * 2));
+    margin: auto;
+    border-radius: var(--radius-lg);
+  }
+  .sheet[open] {
+    animation-name: sheet-pop;
+  }
+  .sheet__grabber {
+    display: none;
+  }
+  .sheet__header {
+    padding-top: var(--space-4);
+  }
+  /* Primary sits rightmost; supporting actions read leftwards. */
+  .sheet__footer {
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+    align-items: center;
+  }
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+}
+
+@keyframes sheet-pop {
+  from {
+    transform: translateY(8px) scale(0.98);
+    opacity: 0;
+  }
+}
+
+@keyframes sheet-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet[open] {
+    animation: sheet-fade var(--dur-fast) linear;
+  }
+}

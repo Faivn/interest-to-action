@@ -1,0 +1,76 @@
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-6) 0 var(--space-10);
+  text-align: center;
+  animation: empty-in var(--dur-base) var(--ease-enter);
+}
+
+.empty__ghosts {
+  display: grid;
+  gap: var(--space-3);
+  width: 100%;
+  margin-bottom: var(--space-6);
+}
+
+.empty__ghost {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  height: 72px;
+  padding: 0 var(--space-5);
+  border: 1.5px dashed var(--line-strong);
+  border-radius: var(--radius-lg);
+  opacity: 0.55;
+}
+
+.empty__ghost:nth-child(2) {
+  opacity: 0.3;
+}
+
+.empty__ghost-dot {
+  width: 24px;
+  height: 24px;
+  border: 1.5px dashed var(--line-strong);
+  border-radius: 50%;
+}
+
+.empty__ghost-line {
+  width: 55%;
+  height: 10px;
+  border-radius: var(--radius-full);
+  background: var(--sunken);
+}
+
+.empty__spark {
+  margin-bottom: var(--space-2);
+}
+
+.empty__body {
+  max-width: 30ch;
+  color: var(--ink-2);
+}
+
+.empty__action {
+  margin-top: var(--space-4);
+}
+
+@keyframes empty-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .empty {
+    animation-name: empty-fade;
+  }
+  @keyframes empty-fade {
+    from {
+      opacity: 0;
+    }
+  }
+}

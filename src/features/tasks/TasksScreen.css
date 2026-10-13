@@ -1,0 +1,63 @@
+.tasks-screen {
+  display: grid;
+  gap: var(--space-5);
+  width: 100%;
+  max-width: calc(var(--content-max) + var(--gutter) * 2);
+  margin: 0 auto;
+  padding: calc(var(--space-12) + env(safe-area-inset-top, 0px)) var(--gutter)
+    calc(var(--bottom-bar-height) + var(--space-16));
+}
+
+.tasks-screen__header {
+  display: grid;
+  gap: var(--space-2);
+  margin-bottom: var(--space-1);
+}
+
+.tasks-screen__summary {
+  color: var(--ink-2);
+  margin-top: var(--space-1);
+}
+
+/* Phone: primary action pinned to the bottom, within thumb reach (DESIGN.md §6.2). */
+.tasks-screen__add {
+  position: fixed;
+  z-index: var(--z-bar);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: var(--space-4) var(--gutter) calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(to top, var(--paper) 70%, transparent);
+}
+
+.tasks-screen__add > .btn {
+  display: flex;
+  max-width: var(--content-max);
+  margin: 0 auto;
+  box-shadow: var(--elev-1);
+}
+
+.tasks-screen__panel {
+  min-height: 240px;
+}
+
+/* Medium and up: the action moves inline beside the title. */
+@media (min-width: 600px) {
+  .tasks-screen {
+    padding-top: var(--space-16);
+    padding-bottom: var(--space-16);
+  }
+  .tasks-screen__header {
+    grid-template-columns: 1fr auto;
+    align-items: end;
+  }
+  .tasks-screen__add {
+    position: static;
+    padding: 0;
+    background: none;
+  }
+  .tasks-screen__add > .btn {
+    width: auto;
+    box-shadow: none;
+  }
+}

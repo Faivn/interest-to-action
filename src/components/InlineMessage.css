@@ -1,0 +1,32 @@
+.inline-msg {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  column-gap: var(--space-3);
+  row-gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+}
+
+.inline-msg__icon {
+  margin-top: 1px;
+}
+
+.inline-msg__action {
+  grid-column: 2;
+  margin-left: calc(var(--space-3) * -1);
+}
+
+.inline-msg--info {
+  background: var(--sunken);
+  color: var(--ink-2);
+}
+
+.inline-msg--error {
+  background: var(--rose-tint);
+  color: var(--ink);
+}
+
+.inline-msg--error .inline-msg__icon {
+  color: var(--rose);
+}

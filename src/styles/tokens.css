@@ -1,0 +1,151 @@
+/*
+ * Daybreak design tokens — mirrors DESIGN.md §3–§6, §11, §14.
+ * Change values here, never inline in components.
+ */
+:root {
+  color-scheme: light dark;
+
+  /* colour — light */
+  --paper: #faf6ef;
+  --surface: #ffffff;
+  --sunken: #f2ece2;
+  --ink: #1e1a16;
+  --ink-2: #5a5148;
+  --ink-3: #6f665c;
+  --line: #e4dccf;
+  --line-strong: #8f8578;
+  --ember: #e2622b;
+  --ember-text: #a8481c;
+  --ember-tint: #fce6d8;
+  --lilac: #d9d0f7;
+  --lilac-text: #5b4bb0;
+  --lilac-tint: #efebfc;
+  --peach: #ffd3b5;
+  --fern: #276b44;
+  --fern-tint: #e1f0e6;
+  --rose: #b4233f;
+  --rose-tint: #fbe4e8;
+  --scrim: rgba(30, 26, 22, 0.4);
+  --on-ink: var(--surface);
+  /* Toast sits on ink in light mode; Undo uses ember on ink (4.95:1). */
+  --toast-bg: var(--ink);
+  --toast-fg: var(--surface);
+  --toast-action: var(--ember);
+  /* fern / rose lifted for legibility on ink (9.4:1, 8.3:1) */
+  --toast-success: #7ad19c;
+  --toast-error: #f59aab;
+
+  /* gradients */
+  --gradient-daybreak: linear-gradient(135deg, #d9d0f7 0%, #ffd3b5 55%, #f6a26b 100%);
+  --gradient-daybreak-wash: radial-gradient(
+    120% 60% at 50% 0%,
+    rgba(217, 208, 247, 0.55) 0%,
+    rgba(255, 211, 181, 0.35) 45%,
+    rgba(250, 246, 239, 0) 75%
+  );
+
+  /* type */
+  --font-display: 'Fraunces Variable', ui-serif, 'New York', Georgia, serif;
+  --font-ui: 'Instrument Sans Variable', -apple-system, 'SF Pro Text', system-ui, sans-serif;
+
+  /* space (4pt base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --gutter: var(--space-5);
+  --content-max: 560px;
+
+  /* radius */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-full: 999px;
+
+  /* elevation */
+  --elev-1: 0 1px 2px rgba(30, 26, 22, 0.06), 0 4px 12px rgba(30, 26, 22, 0.05);
+  --elev-2: 0 8px 32px rgba(30, 26, 22, 0.12);
+
+  /* motion */
+  --dur-instant: 100ms;
+  --dur-fast: 160ms;
+  --dur-base: 240ms;
+  --dur-slow: 360ms;
+  --dur-gentle: 600ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-enter: cubic-bezier(0, 0, 0.2, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+
+  /* layers */
+  --z-bar: 10;
+  --z-toast: 30;
+
+  /* sizing */
+  --bottom-bar-height: calc(56px + var(--space-4) * 2 + env(safe-area-inset-bottom, 0px));
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #14110e;
+    --surface: #1f1b17;
+    --sunken: #0e0c0a;
+    --ink: #f4eee6;
+    --ink-2: #c2b8ac;
+    --ink-3: #a3988b;
+    --line: #3a332c;
+    --line-strong: #7d7266;
+    --ember: #f08452;
+    --ember-text: #f5a37a;
+    --ember-tint: #3b2418;
+    --lilac: #3a3060;
+    --lilac-text: #b9acf2;
+    --lilac-tint: #262040;
+    --peach: #5a3424;
+    --fern: #6cc38f;
+    --fern-tint: #17301f;
+    --rose: #f27a90;
+    --rose-tint: #3a1820;
+    --scrim: rgba(0, 0, 0, 0.6);
+    --on-ink: #1e1a16;
+    --toast-bg: var(--surface);
+    --toast-fg: var(--ink);
+    --toast-action: var(--ember);
+    --toast-success: var(--fern);
+    --toast-error: var(--rose);
+    --gradient-daybreak-wash: radial-gradient(
+      120% 60% at 50% 0%,
+      rgba(217, 208, 247, 0.22) 0%,
+      rgba(255, 211, 181, 0.14) 45%,
+      rgba(20, 17, 14, 0) 75%
+    );
+    --elev-1: none;
+    --elev-2: none;
+  }
+}
+
+@media (min-width: 600px) {
+  :root {
+    --gutter: var(--space-8);
+  }
+}
+
+@media (max-width: 374px) {
+  :root {
+    --gutter: var(--space-4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-base: 160ms;
+    --dur-slow: 160ms;
+    --dur-gentle: 0ms;
+  }
+}

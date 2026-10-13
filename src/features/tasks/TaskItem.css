@@ -1,0 +1,208 @@
+.task {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 72px;
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--line);
+  transition:
+    box-shadow var(--dur-fast) var(--ease-standard),
+    opacity var(--dur-base) var(--ease-standard),
+    transform var(--dur-base) var(--ease-standard);
+  animation: task-in var(--dur-base) var(--ease-enter) both;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+
+.task:hover {
+  box-shadow: 0 0 0 1px var(--line), var(--elev-1);
+}
+
+/* ---------- complete toggle ---------- */
+.task__check {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.task__check svg {
+  width: 28px;
+  height: 28px;
+  overflow: visible;
+}
+
+.task__check-ring {
+  fill: transparent;
+  stroke: var(--line-strong);
+  stroke-width: 1.5;
+  transition:
+    fill var(--dur-fast) var(--ease-standard),
+    stroke var(--dur-fast) var(--ease-standard);
+}
+
+.task__check:hover .task__check-ring {
+  stroke: var(--ember);
+}
+
+.task__check-mark {
+  fill: none;
+  stroke: var(--surface);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset var(--dur-base) var(--ease-standard) 60ms;
+}
+
+/* Hover preview: a faint check suggests what tapping will do. */
+@media (hover: hover) {
+  .task:not(.task--done) .task__check:hover .task__check-mark {
+    stroke: var(--ember);
+    stroke-dashoffset: 0;
+    opacity: 0.45;
+  }
+}
+
+.task--done .task__check-ring {
+  fill: var(--fern);
+  stroke: var(--fern);
+}
+
+.task--done .task__check-mark {
+  stroke-dashoffset: 0;
+}
+
+/* ✦ sparkle burst on completion (DESIGN.md §10.5) */
+.task__burst {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.task__burst span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  border-radius: 50%;
+  background: var(--ember);
+  opacity: 0;
+}
+
+.task__burst span:nth-child(even) {
+  background: var(--lilac-text);
+}
+
+.task--completing .task__burst span {
+  animation: task-burst var(--dur-gentle) var(--ease-enter) forwards;
+}
+
+@keyframes task-burst {
+  0% {
+    opacity: 1;
+    transform: rotate(calc(var(--n) * 60deg)) translateY(-10px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(calc(var(--n) * 60deg)) translateY(-24px) scale(0.4);
+  }
+}
+
+/* ---------- content ---------- */
+.task__main {
+  display: grid;
+  gap: 2px;
+  min-height: 56px;
+  padding: var(--space-2) var(--space-2);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  text-align: left;
+  align-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.task__title {
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.task__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+  color: var(--ink-3);
+}
+
+.task__when {
+  color: var(--ember-text);
+}
+
+.task__duration {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 8px;
+  border-radius: var(--radius-full);
+  background: var(--ember-tint);
+  color: var(--ember-text);
+}
+
+.task--done .task__meta {
+  color: var(--fern);
+}
+
+.task--completing .task__title {
+  opacity: 0.6;
+  transition: opacity var(--dur-base) var(--ease-standard);
+}
+
+/* ---------- delete ---------- */
+@media (hover: hover) {
+  .task__delete {
+    opacity: 0;
+    transition: opacity var(--dur-fast) var(--ease-standard);
+  }
+  .task:hover .task__delete,
+  .task:focus-within .task__delete {
+    opacity: 1;
+  }
+}
+
+@keyframes task-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .task {
+    animation-name: task-fade;
+    animation-delay: 0ms;
+  }
+  @keyframes task-fade {
+    from {
+      opacity: 0;
+    }
+  }
+  .task__check-mark {
+    transition: none;
+  }
+  .task--completing .task__burst span {
+    animation: none;
+  }
+}
